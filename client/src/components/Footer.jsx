@@ -1,99 +1,102 @@
 import React from 'react';
-import { Activity, Phone, Mail, MapPin, ShieldCheck, Heart } from './Icons';
+import { Activity, Phone, Mail, MapPin, CheckCircle2 } from './Icons';
 import { Link } from './Router';
-
-
 
 export default function Footer() {
   return (
     <footer
       style={{
-        marginTop: '6rem',
-        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-        background: 'rgba(7, 12, 26, 0.95)',
-        padding: '4rem 0 2rem 0'
+        marginTop: '4rem',
+        borderTop: '3px solid #38bdf8',
+        background: 'linear-gradient(135deg, #075985 0%, #0369a1 50%, #0284c7 100%)',
+        padding: '3.5rem 0 1.75rem 0',
+        color: '#ffffff',
+        boxShadow: '0 -4px 20px rgba(2, 132, 199, 0.15)'
       }}
     >
       <div className="app-container">
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: '3rem',
-            marginBottom: '3.5rem'
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: '2.5rem',
+            marginBottom: '2.5rem'
           }}
         >
-          {/* Col 1: Brand & Accreditation */}
+          {/* Col 1: Brand & Info */}
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.25rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
               <div
                 style={{
                   width: '36px',
                   height: '36px',
-                  borderRadius: '10px',
-                  background: 'var(--primary-gradient)',
+                  borderRadius: '8px',
+                  background: '#ffffff',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center'
+                  justifyContent: 'center',
+                  color: '#0284c7',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
                 }}
               >
-                <Activity size={20} color="#ffffff" />
+                <Activity size={20} color="#0284c7" />
               </div>
               <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#ffffff' }}>
-                MediPulse <span style={{ color: 'var(--primary-400)' }}>360</span>
+                MediPulse <span style={{ color: '#bae6fd' }}>360</span>
               </span>
             </div>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', lineHeight: 1.6, marginBottom: '1.25rem' }}>
-              An enterprise full-stack clinic & hospital management platform offering real-time appointment scheduling, electronic medical records, and digital consultations.
+            <p style={{ color: '#e0f2fe', fontSize: '0.85rem', lineHeight: 1.6, marginBottom: '1rem' }}>
+              A modern healthcare management and clinical scheduling platform with electronic prescriptions, doctor rosters, and real-time consultation support.
             </p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#10b981', fontSize: '0.8rem', fontWeight: 600 }}>
-              <ShieldCheck size={16} /> ISO 27001 & NHS Digital Certified Architecture
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#a7f3d0', fontSize: '0.8rem', fontWeight: 700 }}>
+              <CheckCircle2 size={16} color="#34d399" /> Hospital Management Suite
             </div>
           </div>
 
           {/* Col 2: Quick Links */}
           <div>
-            <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#ffffff', marginBottom: '1.25rem' }}>
-              Specialties & Care
+            <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#ffffff', marginBottom: '1rem', letterSpacing: '0.02em' }}>
+              Medical Specialties
             </h4>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.875rem' }}>
-              <li><Link to="/doctors?department=Cardiology" style={{ color: 'var(--text-secondary)' }}>Cardiovascular Medicine</Link></li>
-              <li><Link to="/doctors?department=Dental" style={{ color: 'var(--text-secondary)' }}>Dental Surgery & Hygiene</Link></li>
-              <li><Link to="/doctors?department=General" style={{ color: 'var(--text-secondary)' }}>General Practice & Family Health</Link></li>
-              <li><Link to="/doctors?department=Pediatrics" style={{ color: 'var(--text-secondary)' }}>Pediatrics & Child Care</Link></li>
-              <li><Link to="/departments" style={{ color: 'var(--text-secondary)' }}>All Hospital Departments</Link></li>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.85rem' }}>
+              <li><Link to="/doctors?department=Cardiology" style={{ color: '#bae6fd', textDecoration: 'none' }}>Cardiovascular Medicine</Link></li>
+              <li><Link to="/doctors?department=Dental" style={{ color: '#bae6fd', textDecoration: 'none' }}>Dental Surgery</Link></li>
+              <li><Link to="/doctors?department=General" style={{ color: '#bae6fd', textDecoration: 'none' }}>General Practice</Link></li>
+              <li><Link to="/doctors?department=Pediatrics" style={{ color: '#bae6fd', textDecoration: 'none' }}>Pediatrics</Link></li>
+              <li><Link to="/departments" style={{ color: '#bae6fd', textDecoration: 'none' }}>All Departments</Link></li>
             </ul>
           </div>
 
           {/* Col 3: Portal Access */}
           <div>
-            <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#ffffff', marginBottom: '1.25rem' }}>
-              User Portals
+            <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#ffffff', marginBottom: '1rem', letterSpacing: '0.02em' }}>
+              Navigation & Portals
             </h4>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.875rem' }}>
-              <li><Link to="/book" style={{ color: 'var(--text-secondary)' }}>Book an Appointment</Link></li>
-              <li><Link to="/patient/dashboard" style={{ color: 'var(--text-secondary)' }}>Patient Health Records</Link></li>
-              <li><Link to="/doctor/dashboard" style={{ color: 'var(--text-secondary)' }}>Doctor Clinical Dashboard</Link></li>
-              <li><Link to="/admin/dashboard" style={{ color: 'var(--text-secondary)' }}>Administrator Controls</Link></li>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.85rem' }}>
+              <li><Link to="/book" style={{ color: '#bae6fd', textDecoration: 'none' }}>Book an Appointment</Link></li>
+              <li><Link to="/doctors" style={{ color: '#bae6fd', textDecoration: 'none' }}>Our Doctors</Link></li>
+              <li><Link to="/patient/dashboard" style={{ color: '#bae6fd', textDecoration: 'none' }}>Patient Dashboard</Link></li>
+              <li><Link to="/doctor/dashboard" style={{ color: '#bae6fd', textDecoration: 'none' }}>Doctor Dashboard</Link></li>
+              <li><Link to="/admin/dashboard" style={{ color: '#bae6fd', textDecoration: 'none' }}>Admin Dashboard</Link></li>
             </ul>
           </div>
 
-          {/* Col 4: Emergency Contacts */}
+          {/* Col 4: Contact info */}
           <div>
-            <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#ffffff', marginBottom: '1.25rem' }}>
-              Clinic Contacts
+            <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#ffffff', marginBottom: '1rem', letterSpacing: '0.02em' }}>
+              Hospital Contact
             </h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Phone size={16} color="var(--primary-400)" />
-                <span>Emergency: +44 (0) 20 7946 0999</span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', fontSize: '0.85rem', color: '#e0f2fe' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Phone size={15} color="#7dd3fc" />
+                <span>Tel: +44 (0) 20 7946 0999</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Mail size={16} color="var(--primary-400)" />
-                <span>support@medipulse360.com</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Mail size={15} color="#7dd3fc" />
+                <span>contact@medipulse360.com</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <MapPin size={16} color="var(--primary-400)" />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <MapPin size={15} color="#7dd3fc" />
                 <span>42 Healthcare Plaza, London, UK</span>
               </div>
             </div>
@@ -102,22 +105,22 @@ export default function Footer() {
 
         <div
           style={{
-            borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-            paddingTop: '2rem',
+            borderTop: '1px solid rgba(255, 255, 255, 0.18)',
+            paddingTop: '1.25rem',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             flexWrap: 'wrap',
-            gap: '1rem',
+            gap: '0.75rem',
             fontSize: '0.8rem',
-            color: 'var(--text-muted)'
+            color: '#bae6fd'
           }}
         >
           <div>
-            © 2026 MediPulse 360 Full-Stack Healthcare System. Built for PUSL3120 Assessment.
+            © 2026 MediPulse 360 – PUSL3120 Full-Stack Healthcare Management System.
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-            Engineered with MERN Stack + WebSockets + Docker
+          <div>
+            React • Node.js • Express • MongoDB • Socket.IO
           </div>
         </div>
       </div>
