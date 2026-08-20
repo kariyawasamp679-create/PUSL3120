@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from '../components/Router';
 import { useAuth } from '../context/AuthContext';
-
 import { useSocket } from '../context/SocketContext';
 import { departmentService } from '../services/departmentService';
 import { userService } from '../services/userService';
@@ -10,90 +9,13 @@ import SlotPicker from '../components/SlotPicker';
 import {
   Calendar,
   Clock,
-  User,
-  Activity,
   CheckCircle2,
   Video,
   MapPin,
   ArrowRight,
   ArrowLeft,
-  AlertCircle,
-  Sparkles,
-  ShieldCheck,
-  Stethoscope,
-  HeartPulse
+  AlertCircle
 } from '../components/Icons';
-
-// Zero-dependency pure Canvas celebration confetti
-function triggerCelebration() {
-  try {
-    const canvas = document.createElement('canvas');
-    canvas.style.position = 'fixed';
-    canvas.style.inset = '0';
-    canvas.style.width = '100vw';
-    canvas.style.height = '100vh';
-    canvas.style.pointerEvents = 'none';
-    canvas.style.zIndex = '999999';
-    document.body.appendChild(canvas);
-
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const colors = ['#0ea5e9', '#10b981', '#f59e0b', '#8b5cf6', '#38bdf8', '#ef4444'];
-    const particles = Array.from({ length: 90 }).map(() => ({
-      x: canvas.width * 0.5,
-      y: canvas.height * 0.55,
-      vx: (Math.random() - 0.5) * 16,
-      vy: (Math.random() - 0.7) * 18,
-      size: Math.random() * 8 + 4,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      alpha: 1,
-      rotation: Math.random() * 360,
-      vRot: (Math.random() - 0.5) * 10
-    }));
-
-    let animationFrame;
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      let active = false;
-
-      particles.forEach((p) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy += 0.4;
-        p.alpha -= 0.012;
-        p.rotation += p.vRot;
-
-        if (p.alpha > 0) {
-          active = true;
-          ctx.save();
-          ctx.translate(p.x, p.y);
-          ctx.rotate((p.rotation * Math.PI) / 180);
-          ctx.globalAlpha = Math.max(0, p.alpha);
-          ctx.fillStyle = p.color;
-          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
-          ctx.restore();
-        }
-      });
-
-      if (active) {
-        animationFrame = requestAnimationFrame(animate);
-      } else {
-        cancelAnimationFrame(animationFrame);
-        if (canvas.parentNode) {
-          canvas.parentNode.removeChild(canvas);
-        }
-      }
-    }
-
-    animate();
-  } catch (e) {
-    // Ignore in headless / non-canvas environments
-  }
-}
-
-
 
 const SYMPTOM_OPTIONS = [
   'Chest Tightness / Palpitations',
@@ -182,7 +104,6 @@ export default function BookAppointment() {
         const res = await appointmentService.getAvailableSlots(selectedDoctor._id, selectedDate);
         if (res.slots) {
           setSlots(res.slots);
-          // If previously selected slot became unavailable, clear it
           const currentSlotAvailable = res.slots.find((s) => s.time === selectedSlot && s.available);
           if (!currentSlotAvailable) {
             setSelectedSlot('');
@@ -242,10 +163,6 @@ export default function BookAppointment() {
       if (res.appointment) {
         setBookedAppointment(res.appointment);
         setStep(4);
-
-        // Celebration Confetti!
-        triggerCelebration();
-
       }
     } catch (err) {
       setError(err.message || 'Failed to book appointment. Time slot may have just been taken.');
@@ -255,112 +172,209 @@ export default function BookAppointment() {
   };
 
   return (
-    <div className="app-container" style={{ padding: '3rem 1.5rem', minHeight: '85vh' }}>
-      <div style={{ maxWidth: '880px', margin: '0 auto' }}>
-        {/* Wizard Progress Stepper */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2.5rem', position: 'relative' }}>
-          {[
-            { num: 1, title: 'Doctor & Specialty' },
-            { num: 2, title: 'Date & Time Slot' },
-            { num: 3, title: 'Reason & Symptoms' },
-            { num: 4, title: 'Confirmation' }
-          ].map((s) => {
-            const isCompleted = step > s.num;
-            const isCurrent = step === s.num;
+    <div className="app-container" style={{ padding: '2.5rem 1rem', minHeight: '80vh' }}>
+      <div style={{ maxWidth: '920px', margin: '0 auto' }}>
+        {/* Wizard Progress Stepper (Horizontal Bar) */}
+        <div
+          className="glass-panel"
+          style={{
+            padding: '1.5rem 2rem',
+            marginBottom: '2rem',
+            borderRadius: '16px',
+            position: 'relative',
+            backgroundColor: 'var(--bg-surface)',
+            border: '1px solid rgba(2, 132, 199, 0.25)',
+            boxShadow: 'var(--card-shadow)',
+            overflow: 'hidden'
+          }}
+        >
+          {/* Top subtle gradient accent strip */}
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '4px',
+              background: 'linear-gradient(90deg, #0284c7, #2563eb, #059669)'
+            }}
+          />
 
-            return (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              position: 'relative',
+              width: '100%'
+            }}
+          >
+            {/* Background connecting track line */}
+            <div
+              style={{
+                position: 'absolute',
+                top: '22px',
+                left: '40px',
+                right: '40px',
+                height: '3px',
+                background: 'var(--border-color)',
+                zIndex: 1
+              }}
+            >
               <div
-                key={s.num}
                 style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '6px',
-                  zIndex: 2,
-                  flex: 1
+                  height: '100%',
+                  background: 'linear-gradient(90deg, #0284c7, #2563eb)',
+                  width: step === 1 ? '0%' : step === 2 ? '33%' : step === 3 ? '66%' : '100%',
+                  transition: 'width 0.35s ease'
                 }}
-              >
+              />
+            </div>
+
+            {[
+              { num: 1, title: 'Doctor' },
+              { num: 2, title: 'Date & Time' },
+              { num: 3, title: 'Details' },
+              { num: 4, title: 'Confirmation' }
+            ].map((s) => {
+              const isCompleted = step > s.num;
+              const isCurrent = step === s.num;
+
+              return (
                 <div
+                  key={s.num}
+                  onClick={() => {
+                    if (isCompleted) setStep(s.num);
+                  }}
                   style={{
-                    width: '38px',
-                    height: '38px',
-                    borderRadius: '50%',
                     display: 'flex',
+                    flexDirection: 'column',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    fontWeight: 800,
-                    fontSize: '0.9rem',
-                    transition: 'all 0.25s ease',
-                    background: isCompleted || isCurrent ? 'var(--primary-gradient)' : 'rgba(30, 41, 59, 0.8)',
-                    color: '#ffffff',
-                    boxShadow: isCurrent ? '0 0 15px rgba(14, 165, 233, 0.5)' : 'none',
-                    border: isCurrent ? '2px solid var(--primary-400)' : '1px solid var(--border-color)'
+                    gap: '8px',
+                    position: 'relative',
+                    zIndex: 2,
+                    cursor: isCompleted ? 'pointer' : 'default',
+                    minWidth: '70px'
                   }}
                 >
-                  {isCompleted ? <CheckCircle2 size={18} /> : s.num}
+                  <div
+                    style={{
+                      width: '44px',
+                      height: '44px',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontWeight: 800,
+                      fontSize: '1rem',
+                      transition: 'all 0.25s ease',
+                      background: isCompleted
+                        ? '#059669'
+                        : isCurrent
+                        ? 'linear-gradient(135deg, #0284c7 0%, #2563eb 100%)'
+                        : 'var(--bg-surface)',
+                      color: isCompleted || isCurrent ? '#ffffff' : 'var(--text-muted)',
+                      border: isCompleted
+                        ? '2px solid #a7f3d0'
+                        : isCurrent
+                        ? '3px solid #bae6fd'
+                        : '2px solid var(--border-color)',
+                      boxShadow: isCurrent
+                        ? '0 4px 14px rgba(2, 132, 199, 0.4)'
+                        : isCompleted
+                        ? '0 2px 8px rgba(5, 150, 105, 0.3)'
+                        : 'none',
+                      transform: isCurrent ? 'scale(1.08)' : 'scale(1)'
+                    }}
+                  >
+                    {isCompleted ? <CheckCircle2 size={20} /> : s.num}
+                  </div>
+                  <span
+                    style={{
+                      fontSize: '0.85rem',
+                      fontWeight: isCurrent ? 800 : isCompleted ? 700 : 600,
+                      color: isCurrent
+                        ? '#0284c7'
+                        : isCompleted
+                        ? '#059669'
+                        : 'var(--text-secondary)',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    {s.title}
+                  </span>
                 </div>
-                <span
-                  style={{
-                    fontSize: '0.75rem',
-                    fontWeight: 700,
-                    color: isCurrent ? 'var(--primary-400)' : isCompleted ? '#ffffff' : 'var(--text-muted)',
-                    textAlign: 'center'
-                  }}
-                >
-                  {s.title}
-                </span>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
 
         {error && (
           <div
             style={{
-              padding: '1rem',
-              backgroundColor: 'rgba(244, 63, 94, 0.12)',
-              border: '1px solid rgba(244, 63, 94, 0.3)',
-              borderRadius: '10px',
-              color: '#fda4af',
-              fontSize: '0.9rem',
+              padding: '0.75rem 1rem',
+              backgroundColor: 'var(--accent-rose-bg)',
+              border: '1px solid rgba(225, 29, 72, 0.25)',
+              borderRadius: '8px',
+              color: 'var(--accent-rose)',
+              fontSize: '0.875rem',
               display: 'flex',
               alignItems: 'center',
-              gap: '10px',
-              marginBottom: '2rem'
+              gap: '8px',
+              marginBottom: '1.5rem'
             }}
           >
-            <AlertCircle size={20} />
+            <AlertCircle size={18} />
             <span>{error}</span>
           </div>
         )}
 
         {/* STEP 1: Select Department & Doctor */}
         {step === 1 && (
-          <div className="glass-panel animate-fade-in" style={{ padding: '2.5rem' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#ffffff', marginBottom: '0.5rem' }}>
-              Select Specialty & Practitioner
+          <div
+            className="glass-panel animate-fade-in"
+            style={{
+              padding: '2rem',
+              borderRadius: '14px',
+              border: '1px solid rgba(2, 132, 199, 0.25)',
+              backgroundColor: 'var(--bg-surface)',
+              boxShadow: 'var(--card-shadow)',
+              position: 'relative',
+              overflow: 'hidden'
+            }}
+          >
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                height: '4px',
+                background: 'linear-gradient(90deg, #0284c7, #2563eb)'
+              }}
+            />
+
+            <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
+              Select a Doctor
             </h2>
-            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '2rem' }}>
-              Choose a medical specialty or select from our board-certified clinical doctors.
+            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+              Choose a medical specialty or pick your physician.
             </p>
 
             {/* Department Filter Pills */}
-            <div style={{ marginBottom: '2rem' }}>
-              <label className="form-label" style={{ marginBottom: '0.75rem', display: 'block' }}>
-                Filter by Specialty Department
+            <div style={{ marginBottom: '1.75rem' }}>
+              <label className="form-label" style={{ marginBottom: '0.5rem', display: 'block', fontWeight: 700 }}>
+                Filter by Department
               </label>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 <button
                   type="button"
                   onClick={() => setSelectedDept('')}
+                  className={`btn btn-sm ${selectedDept === '' ? 'btn-primary' : 'btn-secondary'}`}
                   style={{
-                    padding: '6px 14px',
-                    borderRadius: '999px',
-                    fontSize: '0.85rem',
-                    fontWeight: 600,
-                    background: selectedDept === '' ? 'var(--primary-gradient)' : 'rgba(255, 255, 255, 0.05)',
-                    color: '#ffffff',
-                    border: '1px solid var(--border-color)'
+                    borderRadius: '8px',
+                    fontWeight: 700,
+                    backgroundColor: selectedDept === '' ? '#0284c7' : undefined
                   }}
                 >
                   All Specialties ({doctors.length})
@@ -370,14 +384,11 @@ export default function BookAppointment() {
                     key={dept._id}
                     type="button"
                     onClick={() => setSelectedDept(dept._id)}
+                    className={`btn btn-sm ${selectedDept === dept._id ? 'btn-primary' : 'btn-secondary'}`}
                     style={{
-                      padding: '6px 14px',
-                      borderRadius: '999px',
-                      fontSize: '0.85rem',
-                      fontWeight: 600,
-                      background: selectedDept === dept._id ? 'var(--primary-gradient)' : 'rgba(255, 255, 255, 0.05)',
-                      color: '#ffffff',
-                      border: '1px solid var(--border-color)'
+                      borderRadius: '8px',
+                      fontWeight: 700,
+                      backgroundColor: selectedDept === dept._id ? '#0284c7' : undefined
                     }}
                   >
                     {dept.name}
@@ -387,44 +398,136 @@ export default function BookAppointment() {
             </div>
 
             {/* Doctor Cards Grid */}
-            <div className="grid-cols-2" style={{ marginBottom: '2rem' }}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                gap: '1.25rem',
+                marginBottom: '2rem'
+              }}
+            >
               {filteredDoctors.map((doc) => {
                 const isSelected = selectedDoctor?._id === doc._id;
+
+                // Color themes
+                const spec = (doc.specialization || '').toLowerCase();
+                let specBg = '#d1fae5';
+                let specText = '#047857';
+                let topGradient = 'linear-gradient(135deg, #059669 0%, #047857 100%)';
+
+                if (spec.includes('cardio')) {
+                  specBg = '#fee2e2';
+                  specText = '#b91c1c';
+                  topGradient = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+                } else if (spec.includes('dent')) {
+                  specBg = '#e0f2fe';
+                  specText = '#0369a1';
+                  topGradient = 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)';
+                } else if (spec.includes('ped')) {
+                  specBg = '#fef3c7';
+                  specText = '#b45309';
+                  topGradient = 'linear-gradient(135deg, #d97706 0%, #b45309 100%)';
+                } else if (spec.includes('ortho')) {
+                  specBg = '#ede9fe';
+                  specText = '#6d28d9';
+                  topGradient = 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)';
+                }
 
                 return (
                   <div
                     key={doc._id}
                     onClick={() => setSelectedDoctor(doc)}
+                    className="glass-panel-hover"
                     style={{
                       padding: '1.25rem',
-                      borderRadius: '14px',
-                      background: isSelected ? 'rgba(14, 165, 233, 0.15)' : 'rgba(30, 41, 59, 0.5)',
-                      border: isSelected ? '2px solid var(--primary-500)' : '1px solid var(--border-color)',
+                      borderRadius: '12px',
+                      background: isSelected ? '#eff6ff' : 'var(--bg-surface)',
+                      border: isSelected ? '2px solid #0284c7' : '1px solid var(--border-color)',
                       cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                      boxShadow: isSelected ? '0 0 20px rgba(14, 165, 233, 0.3)' : 'none',
+                      transition: 'all var(--transition-fast)',
                       display: 'flex',
-                      gap: '12px'
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      position: 'relative',
+                      overflow: 'hidden',
+                      boxShadow: isSelected ? '0 6px 20px rgba(2, 132, 199, 0.25)' : 'var(--card-shadow)'
                     }}
                   >
-                    <img
-                      src={doc.avatar || 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=256'}
-                      alt={doc.name}
-                      style={{ width: '56px', height: '56px', borderRadius: '12px', objectFit: 'cover' }}
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        height: '4px',
+                        background: topGradient
+                      }}
                     />
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <h4 style={{ fontSize: '1rem', fontWeight: 700, color: '#ffffff' }}>{doc.name}</h4>
-                        <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--primary-400)' }}>
-                          £{doc.consultationFee || 45}
-                        </span>
+
+                    <div>
+                      <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '0.85rem' }}>
+                        <div
+                          style={{
+                            width: '54px',
+                            height: '54px',
+                            borderRadius: '12px',
+                            overflow: 'hidden',
+                            border: isSelected ? '2px solid #0284c7' : '1.5px solid var(--border-color)',
+                            background: '#e0f2fe',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0
+                          }}
+                        >
+                          <img
+                            src={doc.avatar || 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=256'}
+                            alt={doc.name}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                            }}
+                          />
+                        </div>
+
+                        <div style={{ flex: 1 }}>
+                          <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)' }}>{doc.name}</h4>
+                          <span
+                            style={{
+                              fontSize: '0.725rem',
+                              color: specText,
+                              backgroundColor: specBg,
+                              fontWeight: 700,
+                              padding: '2px 7px',
+                              borderRadius: '4px',
+                              display: 'inline-block',
+                              marginTop: '2px'
+                            }}
+                          >
+                            {doc.specialization}
+                          </span>
+                        </div>
                       </div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--primary-400)', fontWeight: 600 }}>
-                        {doc.specialization}
+
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>
+                        {doc.qualifications || 'Consultant Specialist'}
                       </div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                        {doc.qualifications}
-                      </div>
+                    </div>
+
+                    <div
+                      style={{
+                        borderTop: '1px solid var(--border-color)',
+                        paddingTop: '0.75rem',
+                        marginTop: '0.5rem',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>Fee</span>
+                      <span style={{ fontSize: '1.05rem', fontWeight: 800, color: isSelected ? '#0284c7' : 'var(--text-primary)' }}>
+                        Rs. {Number(doc.consultationFee || 1500).toLocaleString()}
+                      </span>
                     </div>
                   </div>
                 );
@@ -437,9 +540,14 @@ export default function BookAppointment() {
                 disabled={!selectedDoctor}
                 onClick={() => setStep(2)}
                 className="btn btn-primary"
-                style={{ opacity: selectedDoctor ? 1 : 0.5, padding: '0.75rem 1.5rem' }}
+                style={{
+                  background: 'linear-gradient(135deg, #0284c7 0%, #2563eb 100%)',
+                  boxShadow: '0 4px 12px rgba(2, 132, 199, 0.25)',
+                  borderRadius: '8px',
+                  fontWeight: 700
+                }}
               >
-                Continue to Date & Slot <ArrowRight size={16} />
+                Continue to Date & Time <ArrowRight size={16} />
               </button>
             </div>
           </div>
@@ -447,19 +555,19 @@ export default function BookAppointment() {
 
         {/* STEP 2: Pick Date & Time Slot */}
         {step === 2 && (
-          <div className="glass-panel animate-fade-in" style={{ padding: '2.5rem' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#ffffff', marginBottom: '0.5rem' }}>
-              Select Appointment Date & Time Slot
+          <div className="glass-panel animate-fade-in" style={{ padding: '2rem', borderRadius: '10px' }}>
+            <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
+              Select Date & Time Slot
             </h2>
-            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '2rem' }}>
-              Selected Doctor: <strong style={{ color: '#ffffff' }}>{selectedDoctor?.name}</strong> ({selectedDoctor?.specialization})
+            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+              Doctor: <strong style={{ color: 'var(--text-primary)' }}>{selectedDoctor?.name}</strong> ({selectedDoctor?.specialization})
             </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '2rem', marginBottom: '2.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '1.5rem', marginBottom: '2rem' }}>
               {/* Date Input Box */}
               <div>
-                <label className="form-label" style={{ marginBottom: '0.5rem', display: 'block' }}>
-                  Choose Date
+                <label className="form-label" style={{ marginBottom: '0.4rem', display: 'block' }}>
+                  Consultation Date
                 </label>
                 <input
                   type="date"
@@ -467,10 +575,10 @@ export default function BookAppointment() {
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
                   className="form-input"
-                  style={{ fontSize: '1rem', padding: '0.85rem' }}
+                  style={{ fontSize: '0.9rem' }}
                 />
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '8px', lineHeight: 1.4 }}>
-                  Practitioner Hours: 09:00 - 17:00 (30-minute consultation blocks).
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '8px' }}>
+                  Available Hours: {selectedDoctor?.workingHours?.start || '09:00'} - {selectedDoctor?.workingHours?.end || '17:00'}
                 </div>
               </div>
 
@@ -485,22 +593,21 @@ export default function BookAppointment() {
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border-color)', paddingTop: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border-color)', paddingTop: '1.25rem' }}>
               <button
                 type="button"
                 onClick={() => setStep(1)}
                 className="btn btn-secondary"
               >
-                <ArrowLeft size={16} /> Back
+                <ArrowLeft size={15} /> Back
               </button>
               <button
                 type="button"
                 disabled={!selectedSlot}
                 onClick={() => setStep(3)}
                 className="btn btn-primary"
-                style={{ opacity: selectedSlot ? 1 : 0.5 }}
               >
-                Continue to Reason <ArrowRight size={16} />
+                Continue to Details <ArrowRight size={16} />
               </button>
             </div>
           </div>
@@ -508,36 +615,38 @@ export default function BookAppointment() {
 
         {/* STEP 3: Consultation Details */}
         {step === 3 && (
-          <div className="glass-panel animate-fade-in" style={{ padding: '2.5rem' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#ffffff', marginBottom: '0.5rem' }}>
-              Consultation Details & Symptoms
+          <div className="glass-panel animate-fade-in" style={{ padding: '2rem', borderRadius: '10px' }}>
+            <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
+              Consultation Details
             </h2>
-            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '2rem' }}>
-              Provide details regarding your visit so Dr. {selectedDoctor?.name} can prepare clinical notes.
+            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+              Select your appointment mode and provide a reason for the consultation.
             </p>
 
             {/* Mode: In-person vs Video */}
             <div className="form-group" style={{ marginBottom: '1.5rem' }}>
-              <label className="form-label">Consultation Delivery Mode</label>
+              <label className="form-label">Consultation Type</label>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <button
                   type="button"
                   onClick={() => setConsultationType('in-person')}
                   style={{
                     padding: '1rem',
-                    borderRadius: '12px',
-                    background: consultationType === 'in-person' ? 'rgba(14, 165, 233, 0.15)' : 'rgba(30, 41, 59, 0.5)',
-                    border: consultationType === 'in-person' ? '2px solid var(--primary-500)' : '1px solid var(--border-color)',
-                    color: '#ffffff',
+                    borderRadius: '8px',
+                    background: consultationType === 'in-person' ? 'var(--accent-emerald-bg)' : 'var(--bg-surface)',
+                    border: consultationType === 'in-person' ? '2px solid var(--accent-emerald)' : '1px solid var(--border-color)',
+                    color: 'var(--text-primary)',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '10px'
+                    gap: '10px',
+                    cursor: 'pointer',
+                    transition: 'all var(--transition-fast)'
                   }}
                 >
-                  <MapPin size={20} color="#10b981" />
+                  <MapPin size={20} color="var(--accent-emerald)" />
                   <div style={{ textAlign: 'left' }}>
-                    <div style={{ fontWeight: 700 }}>In-Person Clinic Visit</div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>At 42 Healthcare Plaza</div>
+                    <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>In-Person Clinic Visit</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>At 42 Healthcare Plaza, London</div>
                   </div>
                 </button>
 
@@ -546,19 +655,21 @@ export default function BookAppointment() {
                   onClick={() => setConsultationType('video-consultation')}
                   style={{
                     padding: '1rem',
-                    borderRadius: '12px',
-                    background: consultationType === 'video-consultation' ? 'rgba(14, 165, 233, 0.15)' : 'rgba(30, 41, 59, 0.5)',
+                    borderRadius: '8px',
+                    background: consultationType === 'video-consultation' ? 'var(--primary-50)' : 'var(--bg-surface)',
                     border: consultationType === 'video-consultation' ? '2px solid var(--primary-500)' : '1px solid var(--border-color)',
-                    color: '#ffffff',
+                    color: 'var(--text-primary)',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '10px'
+                    gap: '10px',
+                    cursor: 'pointer',
+                    transition: 'all var(--transition-fast)'
                   }}
                 >
-                  <Video size={20} color="#38bdf8" />
+                  <Video size={20} color="var(--primary-500)" />
                   <div style={{ textAlign: 'left' }}>
-                    <div style={{ fontWeight: 700 }}>Live Tele-Consultation</div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Encrypted WebSocket video & chat</div>
+                    <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>Live Video Consultation</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Online telehealth & live chat</div>
                   </div>
                 </button>
               </div>
@@ -567,7 +678,7 @@ export default function BookAppointment() {
             {/* Quick Symptoms Chips */}
             <div className="form-group" style={{ marginBottom: '1.5rem' }}>
               <label className="form-label">Relevant Symptoms (Optional)</label>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                 {SYMPTOM_OPTIONS.map((sym) => {
                   const isSelected = selectedSymptoms.includes(sym);
                   return (
@@ -576,13 +687,15 @@ export default function BookAppointment() {
                       type="button"
                       onClick={() => toggleSymptom(sym)}
                       style={{
-                        padding: '6px 12px',
-                        borderRadius: '999px',
+                        padding: '4px 10px',
+                        borderRadius: '6px',
                         fontSize: '0.8rem',
-                        fontWeight: 600,
-                        background: isSelected ? 'rgba(14, 165, 233, 0.25)' : 'rgba(255, 255, 255, 0.05)',
-                        color: isSelected ? 'var(--primary-400)' : 'var(--text-secondary)',
-                        border: isSelected ? '1px solid var(--primary-400)' : '1px solid rgba(255, 255, 255, 0.08)'
+                        fontWeight: 500,
+                        background: isSelected ? 'var(--primary-50)' : 'var(--bg-surface)',
+                        color: isSelected ? 'var(--primary-600)' : 'var(--text-secondary)',
+                        border: isSelected ? '1px solid var(--primary-500)' : '1px solid var(--border-color)',
+                        cursor: 'pointer',
+                        transition: 'all var(--transition-fast)'
                       }}
                     >
                       {isSelected ? '✓ ' : '+ '} {sym}
@@ -593,12 +706,12 @@ export default function BookAppointment() {
             </div>
 
             {/* Reason for Appointment */}
-            <div className="form-group" style={{ marginBottom: '2rem' }}>
-              <label className="form-label">Reason for Consultation *</label>
+            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+              <label className="form-label">Reason for Appointment *</label>
               <textarea
                 rows={3}
                 required
-                placeholder="e.g. Discuss routine cardiology ECG results, review blood pressure readings..."
+                placeholder="e.g. Routine review, symptoms description, or follow-up check..."
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 className="form-textarea"
@@ -606,46 +719,44 @@ export default function BookAppointment() {
             </div>
 
             {/* Order Review Box */}
-            <div style={{ background: 'rgba(30, 41, 59, 0.5)', padding: '1.25rem', borderRadius: '12px', marginBottom: '2rem', border: '1px solid var(--border-color)' }}>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
-                Booking Summary
-              </h4>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem', fontSize: '0.85rem' }}>
+            <div style={{ background: 'var(--bg-primary)', padding: '1rem 1.25rem', borderRadius: '8px', marginBottom: '1.5rem', border: '1px solid var(--border-color)' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.75rem', fontSize: '0.85rem' }}>
                 <div>
-                  <span style={{ color: 'var(--text-muted)' }}>Practitioner:</span>
-                  <div style={{ fontWeight: 700, color: '#ffffff' }}>{selectedDoctor?.name}</div>
+                  <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>Doctor:</span>
+                  <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{selectedDoctor?.name}</div>
                 </div>
                 <div>
-                  <span style={{ color: 'var(--text-muted)' }}>Date & Time:</span>
-                  <div style={{ fontWeight: 700, color: '#38bdf8' }}>{selectedDate} at {selectedSlot}</div>
+                  <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>Date & Slot:</span>
+                  <div style={{ fontWeight: 600, color: 'var(--primary-500)' }}>{selectedDate} at {selectedSlot}</div>
                 </div>
                 <div>
-                  <span style={{ color: 'var(--text-muted)' }}>Delivery Mode:</span>
-                  <div style={{ fontWeight: 700, color: '#10b981' }}>{consultationType === 'in-person' ? 'In-Person' : 'Video Telehealth'}</div>
+                  <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>Mode:</span>
+                  <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
+                    {consultationType === 'in-person' ? 'In-Person' : 'Video Telehealth'}
+                  </div>
                 </div>
                 <div>
-                  <span style={{ color: 'var(--text-muted)' }}>Total Fee:</span>
-                  <div style={{ fontWeight: 800, color: '#ffffff', fontSize: '1rem' }}>£{selectedDoctor?.consultationFee || 45}</div>
+                  <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>Fee:</span>
+                  <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>Rs. {Number(selectedDoctor?.consultationFee || 1500).toLocaleString()}</div>
                 </div>
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border-color)', paddingTop: '1.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border-color)', paddingTop: '1.25rem' }}>
               <button
                 type="button"
                 onClick={() => setStep(2)}
                 className="btn btn-secondary"
               >
-                <ArrowLeft size={16} /> Back
+                <ArrowLeft size={15} /> Back
               </button>
               <button
                 type="button"
                 disabled={submitting || !reason.trim()}
                 onClick={handleConfirmBooking}
                 className="btn btn-primary"
-                style={{ padding: '0.75rem 2rem', fontSize: '1rem' }}
               >
-                {submitting ? 'Confirming with WebSocket...' : 'Instant Confirm & Book'}
+                {submitting ? 'Confirming...' : 'Confirm Appointment'}
               </button>
             </div>
           </div>
@@ -653,58 +764,56 @@ export default function BookAppointment() {
 
         {/* STEP 4: Success Confirmation */}
         {step === 4 && bookedAppointment && (
-          <div className="glass-panel animate-fade-in" style={{ padding: '3.5rem 2.5rem', textAlign: 'center' }}>
+          <div className="glass-panel animate-fade-in" style={{ padding: '2.5rem 1.5rem', textAlign: 'center', borderRadius: '10px' }}>
             <div
               style={{
-                width: '72px',
-                height: '72px',
+                width: '56px',
+                height: '56px',
                 borderRadius: '50%',
-                background: 'rgba(16, 185, 129, 0.2)',
-                color: '#10b981',
+                background: 'var(--accent-emerald-bg)',
+                color: 'var(--accent-emerald)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                margin: '0 auto 1.5rem auto',
-                border: '2px solid #10b981',
-                boxShadow: '0 0 25px rgba(16, 185, 129, 0.4)'
+                margin: '0 auto 1rem auto',
+                border: '1px solid rgba(5, 150, 105, 0.3)'
               }}
             >
-              <CheckCircle2 size={38} />
+              <CheckCircle2 size={32} />
             </div>
 
-            <h2 style={{ fontSize: '2rem', fontWeight: 800, color: '#ffffff', marginBottom: '0.5rem' }}>
-              Appointment Confirmed!
+            <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
+              Appointment Confirmed
             </h2>
-            <p style={{ fontSize: '1rem', color: 'var(--text-secondary)', maxWidth: '540px', margin: '0 auto 2rem auto' }}>
-              Your appointment with <strong>Dr. {bookedAppointment.doctor?.name}</strong> has been confirmed and broadcast in real time to the hospital queue.
+            <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', maxWidth: '480px', margin: '0 auto 1.5rem auto' }}>
+              Your appointment with <strong>Dr. {bookedAppointment.doctor?.name}</strong> has been successfully scheduled.
             </p>
 
-            <div style={{ maxWidth: '480px', margin: '0 auto 2.5rem auto', background: 'rgba(30, 41, 59, 0.6)', padding: '1.5rem', borderRadius: '14px', textAlign: 'left', border: '1px solid var(--border-color)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+            <div style={{ maxWidth: '420px', margin: '0 auto 2rem auto', background: 'var(--bg-primary)', padding: '1.25rem', borderRadius: '8px', textAlign: 'left', border: '1px solid var(--border-color)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.85rem' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Booking Ref:</span>
-                <strong style={{ color: 'var(--primary-400)' }}>{bookedAppointment._id?.substring(0, 8).toUpperCase()}</strong>
+                <strong style={{ color: 'var(--primary-500)' }}>{bookedAppointment._id?.substring(0, 8).toUpperCase()}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Date & Slot:</span>
-                <strong style={{ color: '#ffffff' }}>{new Date(bookedAppointment.appointmentDate).toDateString()} at {bookedAppointment.timeSlot}</strong>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.85rem' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Date & Time:</span>
+                <strong style={{ color: 'var(--text-primary)' }}>{new Date(bookedAppointment.appointmentDate).toDateString()} at {bookedAppointment.timeSlot}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.85rem' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Type:</span>
-                <strong style={{ color: '#10b981' }}>{bookedAppointment.type}</strong>
+                <strong style={{ color: 'var(--text-primary)' }}>{bookedAppointment.type === 'video-consultation' ? 'Live Telehealth' : 'In-Person'}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Status:</span>
                 <span className="badge badge-confirmed">Confirmed</span>
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
               <button
                 onClick={() => navigate('/patient/dashboard')}
                 className="btn btn-primary"
-                style={{ padding: '0.75rem 1.5rem' }}
               >
-                Go to Patient Portal
+                Go to Patient Dashboard
               </button>
               <button
                 onClick={() => {
@@ -714,9 +823,8 @@ export default function BookAppointment() {
                   setReason('');
                 }}
                 className="btn btn-secondary"
-                style={{ padding: '0.75rem 1.5rem' }}
               >
-                Book Another Appointment
+                Book Another
               </button>
             </div>
           </div>

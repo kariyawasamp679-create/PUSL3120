@@ -1,28 +1,50 @@
 import React from 'react';
 import { ArrowUpRight } from './Icons';
 
+export default function StatsCard({
+  title,
+  value,
+  icon: Icon,
+  trend,
+  subtitle,
+  color = 'var(--primary-500)',
+  bgLight = 'var(--primary-50)',
+  borderAccent = 'var(--primary-200)',
+  gradient,
+  cardBorder = 'var(--border-color)'
+}) {
+  const topGradient = gradient || `linear-gradient(90deg, ${color}, ${color})`;
 
-export default function StatsCard({ title, value, icon: Icon, trend, subtitle, color = 'var(--primary-500)' }) {
   return (
-    <div className="glass-panel glass-panel-hover" style={{ padding: '1.5rem', position: 'relative', overflow: 'hidden' }}>
-      {/* Decorative gradient blur in corner */}
+    <div
+      className="glass-panel glass-panel-hover"
+      style={{
+        padding: '1.5rem',
+        borderRadius: '14px',
+        border: `1px solid ${cardBorder}`,
+        backgroundColor: 'var(--bg-surface)',
+        boxShadow: 'var(--card-shadow)',
+        position: 'relative',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between'
+      }}
+    >
+      {/* Top Color Accent Strip */}
       <div
         style={{
           position: 'absolute',
-          top: '-20px',
-          right: '-20px',
-          width: '80px',
-          height: '80px',
-          borderRadius: '50%',
-          background: color,
-          opacity: 0.15,
-          filter: 'blur(20px)',
-          pointerEvents: 'none'
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '4px',
+          background: topGradient
         }}
       />
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-        <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.85rem' }}>
+        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
           {title}
         </span>
         <div
@@ -30,34 +52,37 @@ export default function StatsCard({ title, value, icon: Icon, trend, subtitle, c
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            width: '40px',
-            height: '40px',
+            width: '44px',
+            height: '44px',
             borderRadius: '10px',
-            background: `rgba(255, 255, 255, 0.05)`,
+            background: bgLight,
             color: color,
-            border: '1px solid rgba(255, 255, 255, 0.08)'
+            border: `1.5px solid ${borderAccent}`,
+            boxShadow: `0 4px 12px ${bgLight}`
           }}
         >
-          {Icon && <Icon size={20} />}
+          {Icon && <Icon size={22} color={color} />}
         </div>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginBottom: '0.25rem' }}>
-        <span style={{ fontSize: '1.85rem', fontWeight: 800, color: '#ffffff' }}>
-          {value}
-        </span>
-        {trend && (
-          <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#34d399', display: 'flex', alignItems: 'center' }}>
-            <ArrowUpRight size={14} /> {trend}
+      <div>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginBottom: '0.25rem' }}>
+          <span style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
+            {value}
+          </span>
+          {trend && (
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--accent-emerald)', display: 'flex', alignItems: 'center', gap: '2px' }}>
+              <ArrowUpRight size={13} /> {trend}
+            </span>
+          )}
+        </div>
+
+        {subtitle && (
+          <span style={{ fontSize: '0.775rem', color: 'var(--text-muted)', fontWeight: 500 }}>
+            {subtitle}
           </span>
         )}
       </div>
-
-      {subtitle && (
-        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-          {subtitle}
-        </span>
-      )}
     </div>
   );
 }

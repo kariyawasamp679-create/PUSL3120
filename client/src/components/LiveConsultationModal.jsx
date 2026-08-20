@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import { messageService } from '../services/messageService';
-import { X, Send, Video, MessageSquare, Shield, Clock } from './Icons';
-
+import { X, Send, Video, MessageSquare, Shield } from './Icons';
 
 export default function LiveConsultationModal({ isOpen, onClose, appointment }) {
   const { user } = useAuth();
@@ -22,7 +22,6 @@ export default function LiveConsultationModal({ isOpen, onClose, appointment }) 
   useEffect(() => {
     if (!isOpen || !appointmentId) return;
 
-    // Load past messages for this appointment
     async function loadChatHistory() {
       try {
         const res = await messageService.getMessages(appointmentId);
@@ -36,7 +35,6 @@ export default function LiveConsultationModal({ isOpen, onClose, appointment }) 
 
     loadChatHistory();
 
-    // Join WebSocket consultation room
     if (socket) {
       socket.emit('join:consultation', appointmentId);
 
@@ -75,7 +73,6 @@ export default function LiveConsultationModal({ isOpen, onClose, appointment }) 
     const content = inputMessage.trim();
     setInputMessage('');
 
-    // Emit typing stop
     if (socket) {
       socket.emit('typing:stop', { appointmentId });
     }
@@ -110,74 +107,57 @@ export default function LiveConsultationModal({ isOpen, onClose, appointment }) 
 
   if (!isOpen || !appointment) return null;
 
-  return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-        backdropFilter: 'blur(10px)',
-        zIndex: 10000,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '1rem'
-      }}
-      onClick={onClose}
-    >
+  const modalContent = (
+    <div className="modal-backdrop" onClick={onClose}>
       <div
-        className="glass-panel animate-fade-in"
+        className="modal-card animate-fade-in"
         style={{
-          width: '100%',
-          maxWidth: '750px',
-          height: '80vh',
+          maxWidth: '700px',
+          height: '75vh',
           display: 'flex',
           flexDirection: 'column',
-          backgroundColor: '#0f172a',
-          border: '1px solid rgba(14, 165, 233, 0.4)',
-          borderRadius: '18px',
-          overflow: 'hidden',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)'
+          padding: 0
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div
           style={{
-            padding: '1rem 1.5rem',
-            background: 'rgba(30, 41, 59, 0.8)',
+            padding: '1rem 1.25rem',
+            background: 'var(--bg-primary)',
             borderBottom: '1px solid var(--border-color)',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
+            borderRadius: '12px 12px 0 0'
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div
               style={{
-                width: '42px',
-                height: '42px',
-                borderRadius: '50%',
-                background: 'var(--primary-gradient)',
+                width: '36px',
+                height: '36px',
+                borderRadius: '8px',
+                background: 'var(--primary-50)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#ffffff'
+                color: 'var(--primary-500)'
               }}
             >
-              <Video size={20} />
+              <Video size={18} />
             </div>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#ffffff' }}>
-                  Live Consultation Room
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                  Consultation Chat
                 </h3>
-                <span style={{ fontSize: '0.7rem', padding: '2px 8px', background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', borderRadius: '999px', fontWeight: 700 }}>
-                  ● Secure WebSocket
+                <span style={{ fontSize: '0.7rem', padding: '2px 6px', background: 'var(--accent-emerald-bg)', color: 'var(--accent-emerald)', borderRadius: '4px', fontWeight: 600 }}>
+                  Connected
                 </span>
               </div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                Session with {partner?.name || 'Participant'} • {appointment.timeSlot} ({new Date(appointment.appointmentDate).toDateString()})
+              <div style={{ fontSize: '0.775rem', color: 'var(--text-secondary)' }}>
+                {partner?.name || 'Participant'} • {appointment.timeSlot}
               </div>
             </div>
           </div>
@@ -185,39 +165,39 @@ export default function LiveConsultationModal({ isOpen, onClose, appointment }) 
           <button
             onClick={onClose}
             style={{
-              background: 'rgba(255, 255, 255, 0.08)',
+              background: 'none',
               border: 'none',
               color: 'var(--text-secondary)',
-              borderRadius: '8px',
-              padding: '6px',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center'
             }}
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
-        {/* Telehealth Banner */}
-        <div style={{ padding: '0.6rem 1.5rem', background: 'rgba(14, 165, 233, 0.1)', borderBottom: '1px solid rgba(14, 165, 233, 0.2)', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.75rem', color: 'var(--primary-100)' }}>
-          <Shield size={14} /> End-to-end encrypted clinical messaging channel. All discussions are saved directly to patient medical records.
+        {/* Info Banner */}
+        <div style={{ padding: '0.5rem 1.25rem', background: 'var(--primary-50)', borderBottom: '1px solid rgba(2, 132, 199, 0.2)', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', color: 'var(--primary-600)' }}>
+          <Shield size={13} /> Messages in this consultation are saved to patient medical records.
         </div>
 
         {/* Message Feed */}
         <div
           style={{
             flex: 1,
-            padding: '1.5rem',
+            padding: '1.25rem',
             overflowY: 'auto',
             display: 'flex',
             flexDirection: 'column',
-            gap: '12px'
+            gap: '10px'
           }}
         >
           {messages.length === 0 ? (
             <div style={{ textAlign: 'center', margin: 'auto', color: 'var(--text-muted)' }}>
-              <MessageSquare size={36} style={{ margin: '0 auto 8px auto', opacity: 0.5 }} />
-              <p style={{ fontSize: '0.9rem' }}>Welcome to the consultation room.</p>
-              <p style={{ fontSize: '0.8rem' }}>Send a message to start communicating in real time.</p>
+              <MessageSquare size={32} style={{ margin: '0 auto 8px auto', opacity: 0.4, color: 'var(--primary-500)' }} />
+              <p style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)' }}>Consultation room ready</p>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '2px' }}>Send a message to start communicating.</p>
             </div>
           ) : (
             messages.map((msg, idx) => {
@@ -232,19 +212,19 @@ export default function LiveConsultationModal({ isOpen, onClose, appointment }) 
                     alignItems: isMe ? 'flex-end' : 'flex-start'
                   }}
                 >
-                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '3px' }}>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '2px' }}>
                     {msg.sender?.name || (isMe ? 'You' : partner?.name)} • {new Date(msg.createdAt || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
                   <div
                     style={{
                       maxWidth: '75%',
-                      padding: '0.75rem 1rem',
-                      borderRadius: isMe ? '14px 14px 2px 14px' : '14px 14px 14px 2px',
-                      background: isMe ? 'var(--primary-gradient)' : 'rgba(30, 41, 59, 0.9)',
-                      color: '#ffffff',
-                      fontSize: '0.9rem',
-                      lineHeight: 1.4,
-                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
+                      padding: '0.65rem 0.95rem',
+                      borderRadius: isMe ? '12px 12px 2px 12px' : '12px 12px 12px 2px',
+                      background: isMe ? 'var(--primary-500)' : 'var(--bg-primary)',
+                      color: isMe ? '#ffffff' : 'var(--text-primary)',
+                      border: isMe ? 'none' : '1px solid var(--border-color)',
+                      fontSize: '0.875rem',
+                      lineHeight: 1.45
                     }}
                   >
                     {msg.content || msg.message}
@@ -255,8 +235,8 @@ export default function LiveConsultationModal({ isOpen, onClose, appointment }) 
           )}
 
           {isTyping && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--primary-400)', fontSize: '0.8rem', fontStyle: 'italic' }}>
-              <span className="animate-pulse-slow">✍️ {typingUser} is typing...</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--primary-500)', fontSize: '0.775rem', fontStyle: 'italic', fontWeight: 600 }}>
+              <span>{typingUser} is typing...</span>
             </div>
           )}
           <div ref={messagesEndRef} />
@@ -266,26 +246,29 @@ export default function LiveConsultationModal({ isOpen, onClose, appointment }) 
         <form
           onSubmit={handleSendMessage}
           style={{
-            padding: '1rem 1.5rem',
-            background: 'rgba(30, 41, 59, 0.8)',
+            padding: '0.85rem 1.25rem',
+            background: 'var(--bg-primary)',
             borderTop: '1px solid var(--border-color)',
             display: 'flex',
-            gap: '10px'
+            gap: '8px',
+            borderRadius: '0 0 12px 12px'
           }}
         >
           <input
             type="text"
-            placeholder="Type your medical query or instruction..."
+            placeholder="Type your message..."
             value={inputMessage}
             onChange={handleInputChange}
             className="form-input"
             style={{ margin: 0 }}
           />
-          <button type="submit" className="btn btn-primary" style={{ padding: '0 1.25rem', flexShrink: 0 }}>
-            <Send size={16} /> Send
+          <button type="submit" className="btn btn-primary btn-sm" style={{ padding: '0 1.25rem', flexShrink: 0 }}>
+            <Send size={14} /> Send
           </button>
         </form>
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(modalContent, document.body) : null;
 }

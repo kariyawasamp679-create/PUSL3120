@@ -1,211 +1,167 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '../context/AuthContext';
-import { X, ShieldCheck, Stethoscope, User, Sparkles, HeartPulse, Activity } from './Icons';
-
+import { useNavigate } from './Router';
+import { X, ShieldCheck, Stethoscope, User, ArrowRight, Key, Check } from './Icons';
 
 export default function DemoAccountModal({ isOpen, onClose }) {
-  const { loginDemoAccount, user } = useAuth();
+  const { login, user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
 
   if (!isOpen) return null;
 
-  const demoRoles = [
-    {
-      id: 'admin',
-      roleName: 'Hospital Administrator',
-      email: 'admin@medipulse.com',
-      name: 'Eleanor Vance',
-      description: 'Manage clinic departments, assign doctors, view system revenue & analytics.',
-      icon: ShieldCheck,
-      color: '#8b5cf6',
-      badge: 'Admin Portal'
-    },
-    {
-      id: 'doctor',
-      roleName: 'Dr. Sarah Jenkins',
-      email: 'dr.sarah@medipulse.com',
-      name: 'Cardiology Specialist',
-      description: 'View daily schedule, confirm appointments, write clinical notes and issue prescriptions.',
-      icon: HeartPulse,
-      color: '#ef4444',
-      badge: 'Doctor Portal'
-    },
-    {
-      id: 'dentist',
-      roleName: 'Dr. Marcus Vance',
-      email: 'dr.marcus@medipulse.com',
-      name: 'Dental Surgeon & Implantologist',
-      description: 'Perform oral surgery bookings, check patient teeth sensitive history, update status.',
-      icon: Sparkles,
-      color: '#0ea5e9',
-      badge: 'Doctor Portal'
-    },
-    {
-      id: 'gp',
-      roleName: 'Dr. Emily Watson',
-      email: 'dr.emily@medipulse.com',
-      name: 'General Practitioner',
-      description: 'Family medicine consultations, manage patient queues, and tele-consultation chat.',
-      icon: Stethoscope,
-      color: '#10b981',
-      badge: 'Doctor Portal'
-    },
-    {
-      id: 'patient',
-      roleName: 'Jane Doe',
-      email: 'jane.doe@example.com',
-      name: 'Registered Patient (Blood: A+)',
-      description: 'Book instant slots, reschedule, view past medical history, download prescriptions.',
-      icon: User,
-      color: '#38bdf8',
-      badge: 'Patient Portal'
-    }
-  ];
-
-  const handleSelectRole = async (roleId) => {
+  const handleAdminQuickLogin = async () => {
     try {
-      await loginDemoAccount(roleId);
+      const res = await login('admin@medipulse.com', 'Password123!');
       onClose();
+      navigate('/admin/dashboard');
     } catch (err) {
-      alert(`Login failed: ${err.message}`);
+      alert(`Login error: ${err.message}`);
     }
   };
 
-  return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.75)',
-        backdropFilter: 'blur(8px)',
-        zIndex: 10000,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '1rem'
-      }}
-      onClick={onClose}
-    >
+  const modalContent = (
+    <div className="modal-backdrop" onClick={onClose}>
       <div
-        className="glass-panel animate-fade-in"
-        style={{
-          width: '100%',
-          maxWidth: '650px',
-          maxHeight: '90vh',
-          overflowY: 'auto',
-          padding: '2rem',
-          backgroundColor: '#0f172a',
-          border: '1px solid rgba(14, 165, 233, 0.3)',
-          borderRadius: '18px',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)'
-        }}
+        className="modal-card animate-fade-in"
+        style={{ padding: '2rem' }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-          <div>
-            <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#ffffff' }}>
-              Select Demo Role (1-Click Login)
-            </h3>
-            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-              Easily evaluate all 3 user portals and multi-role features without manual typing.
-            </p>
+        {/* Modal Header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '8px',
+                background: 'var(--primary-50)',
+                color: 'var(--primary-500)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <ShieldCheck size={22} />
+            </div>
+            <div>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                System Administrator Access
+              </h3>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                Initial administrative credentials to manage hospital operations
+              </p>
+            </div>
           </div>
+
           <button
             onClick={onClose}
             style={{
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: 'none',
+              background: 'var(--bg-primary)',
+              border: '1px solid var(--border-color)',
               color: 'var(--text-secondary)',
-              borderRadius: '8px',
+              borderRadius: '6px',
               padding: '6px',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center'
             }}
           >
-            <X size={20} />
+            <X size={16} />
           </button>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {demoRoles.map((role) => {
-            const Icon = role.icon;
-            const isCurrent = user?.email === role.email;
+        {/* System Admin Credentials Box */}
+        <div
+          style={{
+            background: 'var(--primary-50)',
+            border: '1.5px solid rgba(2, 132, 199, 0.25)',
+            borderRadius: '10px',
+            padding: '1.25rem',
+            marginBottom: '1.5rem'
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--primary-600)', letterSpacing: '0.04em' }}>
+              Default Administrator Account
+            </span>
+            <span style={{ fontSize: '0.75rem', padding: '2px 8px', background: 'var(--accent-emerald-bg)', color: 'var(--accent-emerald)', borderRadius: '4px', fontWeight: 600 }}>
+              Full System Privileges
+            </span>
+          </div>
 
-            return (
-              <div
-                key={role.id}
-                onClick={() => handleSelectRole(role.id)}
-                style={{
-                  padding: '1rem 1.25rem',
-                  borderRadius: '12px',
-                  background: isCurrent ? 'rgba(14, 165, 233, 0.15)' : 'rgba(30, 41, 59, 0.6)',
-                  border: isCurrent ? '1px solid var(--primary-500)' : '1px solid rgba(255, 255, 255, 0.06)',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '1rem'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.borderColor = role.color;
-                  e.currentTarget.style.background = 'rgba(30, 41, 59, 0.9)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.borderColor = isCurrent ? 'var(--primary-500)' : 'rgba(255, 255, 255, 0.06)';
-                  e.currentTarget.style.background = isCurrent ? 'rgba(14, 165, 233, 0.15)' : 'rgba(30, 41, 59, 0.6)';
-                }}
-              >
-                <div
-                  style={{
-                    width: '46px',
-                    height: '46px',
-                    borderRadius: '12px',
-                    backgroundColor: `${role.color}20`,
-                    color: role.color,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0
-                  }}
-                >
-                  <Icon size={24} />
-                </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1rem' }}>
+            <div style={{ background: 'var(--bg-primary)', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
+              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'block' }}>Email Address</span>
+              <strong style={{ fontSize: '0.9rem', color: 'var(--text-primary)' }}>admin@medipulse.com</strong>
+            </div>
+            <div style={{ background: 'var(--bg-primary)', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border-color)' }}>
+              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'block' }}>Password</span>
+              <strong style={{ fontSize: '0.9rem', color: 'var(--text-primary)' }}>Password123!</strong>
+            </div>
+          </div>
 
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-                    <span style={{ fontWeight: 700, color: '#ffffff', fontSize: '1rem' }}>
-                      {role.roleName}
-                    </span>
-                    <span
-                      style={{
-                        fontSize: '0.7rem',
-                        padding: '2px 8px',
-                        borderRadius: '999px',
-                        backgroundColor: `${role.color}25`,
-                        color: role.color,
-                        fontWeight: 700
-                      }}
-                    >
-                      {role.badge}
-                    </span>
-                    {isCurrent && (
-                      <span style={{ fontSize: '0.7rem', color: '#10b981', fontWeight: 700, marginLeft: 'auto' }}>
-                        ● Active Session
-                      </span>
-                    )}
-                  </div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '4px' }}>
-                    {role.email} • Password123!
-                  </div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                    {role.description}
-                  </div>
-                </div>
+          <button
+            type="button"
+            onClick={handleAdminQuickLogin}
+            className="btn btn-primary"
+            style={{ width: '100%', padding: '0.75rem', fontSize: '0.95rem', gap: '8px' }}
+          >
+            <Key size={16} /> 1-Click Sign In as Administrator <ArrowRight size={15} />
+          </button>
+        </div>
+
+        {/* Workflow Guide */}
+        <div>
+          <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            How to Set Up & Test the System
+          </h4>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '10px', background: 'var(--bg-primary)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+              <div style={{ padding: '6px', borderRadius: '6px', background: 'var(--accent-purple-bg)', color: 'var(--accent-purple)', flexShrink: 0 }}>
+                <ShieldCheck size={16} />
               </div>
-            );
-          })}
+              <div style={{ fontSize: '0.825rem' }}>
+                <strong style={{ color: 'var(--text-primary)' }}>1. Admin Controls:</strong> Log in as Admin to add hospital departments and register doctors with their consultation fees and qualifications.
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '10px', background: 'var(--bg-primary)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+              <div style={{ padding: '6px', borderRadius: '6px', background: 'var(--accent-emerald-bg)', color: 'var(--accent-emerald)', flexShrink: 0 }}>
+                <User size={16} />
+              </div>
+              <div style={{ fontSize: '0.825rem' }}>
+                <strong style={{ color: 'var(--text-primary)' }}>2. Patient Registration:</strong> Create a patient account at the Registration page to book live slots with any doctor added by Admin.
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '10px', background: 'var(--bg-primary)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+              <div style={{ padding: '6px', borderRadius: '6px', background: 'var(--primary-50)', color: 'var(--primary-500)', flexShrink: 0 }}>
+                <Stethoscope size={16} />
+              </div>
+              <div style={{ fontSize: '0.825rem' }}>
+                <strong style={{ color: 'var(--text-primary)' }}>3. Doctor Consultations:</strong> Log in with the credentials set by Admin to review patient appointments, conduct consultations, and issue digital prescriptions.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer info */}
+        <div style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+            PUSL3120 University System Architecture
+          </span>
+          <button
+            onClick={onClose}
+            className="btn btn-secondary btn-sm"
+          >
+            Close
+          </button>
         </div>
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(modalContent, document.body) : null;
 }

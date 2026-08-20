@@ -22,6 +22,24 @@ function createSvgIcon(svgContent) {
   };
 }
 
+export const Sun = createSvgIcon(
+  <>
+    <circle cx="12" cy="12" r="5" />
+    <line x1="12" y1="1" x2="12" y2="3" />
+    <line x1="12" y1="21" x2="12" y2="23" />
+    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+    <line x1="1" y1="12" x2="3" y2="12" />
+    <line x1="21" y1="12" x2="23" y2="12" />
+    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+  </>
+);
+
+export const Moon = createSvgIcon(
+  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+);
+
 export const Activity = createSvgIcon(
   <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
 );
@@ -289,6 +307,14 @@ export const ChevronDown = createSvgIcon(
   <polyline points="6 9 12 15 18 9" />
 );
 
+export const ChevronUp = createSvgIcon(
+  <polyline points="18 15 12 9 6 15" />
+);
+
+export const ChevronRight = createSvgIcon(
+  <polyline points="9 18 15 12 9 6" />
+);
+
 export const Building2 = createSvgIcon(
   <>
     <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" />
@@ -342,4 +368,23 @@ export const Award = createSvgIcon(
 
 export const Star = createSvgIcon(
   <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+);
+
+export const Filter = createSvgIcon(
+  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+);
+
+export const Menu = createSvgIcon(
+  <>
+    <line x1="3" y1="12" x2="21" y2="12" />
+    <line x1="3" y1="6" x2="21" y2="6" />
+    <line x1="3" y1="18" x2="21" y2="18" />
+  </>
+);
+
+export const Key = createSvgIcon(
+  <>
+    <path d="m21 2-2 2m-1.5 1.5L14 9l-4-4-6 6a5.66 5.66 0 1 0 8 8l6-6 3.5-3.5" />
+    <circle cx="7.5" cy="16.5" r="1.5" />
+  </>
 );
