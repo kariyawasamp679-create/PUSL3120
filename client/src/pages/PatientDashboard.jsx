@@ -13,16 +13,13 @@ import {
   FileText,
   User,
   Heart,
-  Clock,
   CheckCircle2,
-  AlertCircle,
   Plus,
-  RefreshCw,
-  X
+  X,
+  MapPin,
+  Phone
 } from '../components/Icons';
-
 import { Link } from '../components/Router';
-
 
 export default function PatientDashboard() {
   const { user, updateProfile } = useAuth();
@@ -141,7 +138,7 @@ export default function PatientDashboard() {
           relation: profileForm.emergencyContactRelation
         }
       });
-      setProfileMsg('Health profile updated successfully!');
+      setProfileMsg('Profile updated successfully.');
       setTimeout(() => setProfileMsg(''), 4000);
     } catch (err) {
       setProfileMsg(`Error: ${err.message}`);
@@ -152,133 +149,215 @@ export default function PatientDashboard() {
   const completedCount = appointments.filter((a) => a.status === 'completed').length;
 
   return (
-    <div className="app-container" style={{ padding: '3rem 1.5rem', minHeight: '85vh' }}>
+    <div className="app-container" style={{ padding: '2.5rem 1rem', minHeight: '80vh' }}>
       {/* Patient Welcome Header */}
       <div
         className="glass-panel"
         style={{
-          padding: '2rem 2.5rem',
-          marginBottom: '2.5rem',
+          padding: '1.75rem 2rem',
+          marginBottom: '2rem',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '1.5rem'
+          gap: '1.25rem',
+          borderRadius: '14px',
+          border: '1px solid rgba(2, 132, 199, 0.25)',
+          backgroundColor: 'var(--bg-surface)',
+          boxShadow: 'var(--card-shadow)',
+          position: 'relative',
+          overflow: 'hidden'
         }}
       >
+        {/* Top Gradient Accent Bar */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '4px',
+            background: 'linear-gradient(90deg, #0284c7, #059669, #7c3aed)'
+          }}
+        />
+
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-          <img
-            src={user?.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=256'}
-            alt="Patient"
-            style={{ width: '68px', height: '68px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary-400)' }}
-          />
+          <div
+            style={{
+              width: '58px',
+              height: '58px',
+              borderRadius: '14px',
+              background: '#e0f2fe',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '2px solid #7dd3fc',
+              boxShadow: '0 4px 12px rgba(2, 132, 199, 0.18)',
+              overflow: 'hidden',
+              flexShrink: 0
+            }}
+          >
+            <img
+              src={user?.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=256'}
+              alt="Patient"
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              onError={(e) => {
+                e.target.style.display = 'none';
+              }}
+            />
+          </div>
+
           <div>
-            <span style={{ fontSize: '0.8rem', textTransform: 'uppercase', color: 'var(--primary-400)', fontWeight: 700 }}>
-              Patient Health Portal
-            </span>
-            <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#ffffff', marginTop: '2px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <span
+                style={{
+                  fontSize: '0.75rem',
+                  textTransform: 'uppercase',
+                  color: '#0284c7',
+                  fontWeight: 800,
+                  letterSpacing: '0.05em',
+                  background: '#e0f2fe',
+                  padding: '2px 8px',
+                  borderRadius: '4px',
+                  border: '1px solid #bae6fd'
+                }}
+              >
+                Patient Portal
+              </span>
+              <span
+                style={{
+                  fontSize: '0.75rem',
+                  color: '#059669',
+                  fontWeight: 800,
+                  background: '#d1fae5',
+                  padding: '2px 8px',
+                  borderRadius: '4px',
+                  border: '1px solid #a7f3d0'
+                }}
+              >
+                ID: {user?._id?.substring(0, 8).toUpperCase() || 'P-9812'}
+              </span>
+              <span
+                style={{
+                  fontSize: '0.75rem',
+                  color: '#e11d48',
+                  fontWeight: 800,
+                  background: '#ffe4e6',
+                  padding: '2px 8px',
+                  borderRadius: '4px',
+                  border: '1px solid #fecdd3'
+                }}
+              >
+                Blood: {user?.bloodGroup || 'A+'}
+              </span>
+            </div>
+
+            <h1 style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: '4px' }}>
               Welcome, {user?.name || 'Patient'}
             </h1>
-            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
-              Blood Group: <strong style={{ color: '#ef4444' }}>{user?.bloodGroup || 'A+'}</strong> • Patient ID: <strong style={{ color: '#ffffff' }}>{user?._id?.substring(0, 8).toUpperCase() || 'P-9812'}</strong>
+            <div style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+              Email: <strong style={{ color: 'var(--text-primary)' }}>{user?.email}</strong>
+              {user?.phone && <span> • Phone: <strong style={{ color: 'var(--text-primary)' }}>{user?.phone}</strong></span>}
             </div>
           </div>
         </div>
 
-        <Link to="/book" className="btn btn-primary" style={{ padding: '0.75rem 1.4rem' }}>
-          <Plus size={16} /> Book New Appointment
+        <Link
+          to="/book"
+          className="btn btn-sm"
+          style={{
+            background: 'linear-gradient(135deg, #0284c7 0%, #2563eb 100%)',
+            color: '#ffffff',
+            border: 'none',
+            fontWeight: 700,
+            borderRadius: '8px',
+            padding: '10px 18px',
+            boxShadow: '0 4px 12px rgba(2, 132, 199, 0.25)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px'
+          }}
+        >
+          <Plus size={16} /> Book Appointment
         </Link>
       </div>
 
       {/* KPI Overview Metrics */}
-      <div className="grid-cols-4" style={{ marginBottom: '2.5rem' }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          gap: '1.25rem',
+          marginBottom: '2rem'
+        }}
+      >
         <StatsCard
           title="Upcoming Appointments"
           value={upcomingCount}
           icon={Calendar}
-          subtitle="Scheduled consultations"
-          color="#0ea5e9"
+          subtitle="Scheduled visits"
+          color="#0284c7"
+          bgLight="#e0f2fe"
+          borderAccent="#7dd3fc"
+          gradient="linear-gradient(90deg, #0284c7, #38bdf8)"
+          cardBorder="rgba(2, 132, 199, 0.25)"
         />
         <StatsCard
-          title="Clinical Prescriptions"
+          title="Prescriptions & Records"
           value={records.length}
           icon={FileText}
-          subtitle="Issued medical reports"
-          color="#10b981"
+          subtitle="Issued medical files"
+          color="#059669"
+          bgLight="#d1fae5"
+          borderAccent="#6ee7b7"
+          gradient="linear-gradient(90deg, #059669, #34d399)"
+          cardBorder="rgba(5, 150, 105, 0.25)"
         />
         <StatsCard
-          title="Completed Consultations"
+          title="Completed Visits"
           value={completedCount}
           icon={CheckCircle2}
-          subtitle="Past hospital visits"
-          color="#8b5cf6"
+          subtitle="Past consultations"
+          color="#7c3aed"
+          bgLight="#ede9fe"
+          borderAccent="#c4b5fd"
+          gradient="linear-gradient(90deg, #7c3aed, #a78bfa)"
+          cardBorder="rgba(124, 58, 237, 0.25)"
         />
         <StatsCard
           title="Emergency Contact"
-          value={user?.emergencyContact?.name ? 'Verified' : 'Pending'}
+          value={user?.emergencyContact?.name ? 'Configured' : 'Not set'}
           icon={Heart}
-          subtitle={user?.emergencyContact?.name || 'Tap Profile to set'}
-          color="#f43f5e"
+          subtitle={user?.emergencyContact?.name ? `${user.emergencyContact.name} (${user.emergencyContact.relation || 'Emergency'})` : 'Configure in profile'}
+          color="#e11d48"
+          bgLight="#ffe4e6"
+          borderAccent="#fda4af"
+          gradient="linear-gradient(90deg, #e11d48, #f43f5e)"
+          cardBorder="rgba(225, 29, 72, 0.25)"
         />
       </div>
 
-      {/* Navigation Tabs */}
-      <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid var(--border-color)', marginBottom: '2rem' }}>
+      {/* Navigation Segmented Tabs */}
+      <div className="tab-container" style={{ marginBottom: '1.5rem' }}>
         <button
           onClick={() => setActiveTab('appointments')}
-          style={{
-            padding: '0.75rem 1.25rem',
-            background: 'none',
-            border: 'none',
-            borderBottom: activeTab === 'appointments' ? '2px solid var(--primary-400)' : '2px solid transparent',
-            color: activeTab === 'appointments' ? 'var(--primary-400)' : 'var(--text-secondary)',
-            fontWeight: 700,
-            fontSize: '0.95rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}
+          className={`tab-btn ${activeTab === 'appointments' ? 'active' : ''}`}
         >
-          <Calendar size={18} /> My Appointments ({appointments.length})
+          <Calendar size={15} /> My Appointments ({appointments.length})
         </button>
 
         <button
           onClick={() => setActiveTab('records')}
-          style={{
-            padding: '0.75rem 1.25rem',
-            background: 'none',
-            border: 'none',
-            borderBottom: activeTab === 'records' ? '2px solid var(--primary-400)' : '2px solid transparent',
-            color: activeTab === 'records' ? 'var(--primary-400)' : 'var(--text-secondary)',
-            fontWeight: 700,
-            fontSize: '0.95rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}
+          className={`tab-btn ${activeTab === 'records' ? 'active' : ''}`}
         >
-          <FileText size={18} /> Prescriptions & History ({records.length})
+          <FileText size={15} /> Medical Records ({records.length})
         </button>
 
         <button
           onClick={() => setActiveTab('profile')}
-          style={{
-            padding: '0.75rem 1.25rem',
-            background: 'none',
-            border: 'none',
-            borderBottom: activeTab === 'profile' ? '2px solid var(--primary-400)' : '2px solid transparent',
-            color: activeTab === 'profile' ? 'var(--primary-400)' : 'var(--text-secondary)',
-            fontWeight: 700,
-            fontSize: '0.95rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}
+          className={`tab-btn ${activeTab === 'profile' ? 'active' : ''}`}
         >
-          <User size={18} /> Health Profile & Contacts
+          <User size={15} /> Profile & Emergency Contact
         </button>
       </div>
 
@@ -286,21 +365,13 @@ export default function PatientDashboard() {
       {activeTab === 'appointments' && (
         <div>
           {/* Status Filter Buttons */}
-          <div style={{ display: 'flex', gap: '8px', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '6px', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
             {['', 'confirmed', 'completed', 'cancelled'].map((st) => (
               <button
                 key={st}
                 onClick={() => setStatusFilter(st)}
-                style={{
-                  padding: '6px 14px',
-                  borderRadius: '999px',
-                  fontSize: '0.8rem',
-                  fontWeight: 600,
-                  textTransform: 'capitalize',
-                  background: statusFilter === st ? 'var(--primary-gradient)' : 'rgba(255, 255, 255, 0.05)',
-                  color: '#ffffff',
-                  border: '1px solid var(--border-color)'
-                }}
+                className={`btn btn-sm ${statusFilter === st ? 'btn-primary' : 'btn-secondary'}`}
+                style={{ borderRadius: '6px', textTransform: 'capitalize' }}
               >
                 {st === '' ? 'All Appointments' : st}
               </button>
@@ -308,16 +379,26 @@ export default function PatientDashboard() {
           </div>
 
           {appointments.length === 0 ? (
-            <div className="glass-panel" style={{ padding: '3rem', textAlign: 'center' }}>
-              <Calendar size={48} style={{ margin: '0 auto 1rem auto', color: 'var(--text-muted)' }} />
-              <h3 style={{ fontSize: '1.25rem', color: '#ffffff', marginBottom: '0.5rem' }}>No Appointments Found</h3>
-              <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
-                You have no scheduled consultations matching the selected filter.
+            <div className="glass-panel" style={{ padding: '3.5rem 2rem', textAlign: 'center', borderRadius: '14px', border: '1px solid rgba(2, 132, 199, 0.2)' }}>
+              <div style={{ width: '56px', height: '56px', borderRadius: '12px', background: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem auto' }}>
+                <Calendar size={28} />
+              </div>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>No Consultations Found</h3>
+              <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.875rem' }}>
+                You have no scheduled consultations matching this status filter.
               </p>
-              <Link to="/book" className="btn btn-primary">Book Consultation</Link>
+              <Link to="/book" className="btn btn-primary btn-sm">
+                <Plus size={14} /> Book an Appointment
+              </Link>
             </div>
           ) : (
-            <div className="grid-cols-2">
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+                gap: '1.25rem'
+              }}
+            >
               {appointments.map((app) => (
                 <AppointmentCard
                   key={app._id}
@@ -340,57 +421,99 @@ export default function PatientDashboard() {
       {activeTab === 'records' && (
         <div>
           {records.length === 0 ? (
-            <div className="glass-panel" style={{ padding: '3rem', textAlign: 'center' }}>
-              <FileText size={48} style={{ margin: '0 auto 1rem auto', color: 'var(--text-muted)' }} />
-              <h3 style={{ fontSize: '1.25rem', color: '#ffffff', marginBottom: '0.5rem' }}>No Medical Records Yet</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                Clinical reports and prescriptions issued by attending doctors will be documented here.
+            <div className="glass-panel" style={{ padding: '3.5rem 2rem', textAlign: 'center', borderRadius: '14px', border: '1px solid rgba(5, 150, 105, 0.2)' }}>
+              <div style={{ width: '56px', height: '56px', borderRadius: '12px', background: '#d1fae5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem auto' }}>
+                <FileText size={28} />
+              </div>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>No Medical Records Yet</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+                Clinical reports, digital prescriptions, and vital stats issued by doctors will appear here.
               </p>
             </div>
           ) : (
-            <div className="grid-cols-2">
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+                gap: '1.25rem'
+              }}
+            >
               {records.map((rec) => (
                 <div
                   key={rec._id}
                   className="glass-panel glass-panel-hover"
-                  style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
+                  style={{
+                    padding: '1.75rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    borderRadius: '14px',
+                    backgroundColor: 'var(--bg-surface)',
+                    boxShadow: 'var(--card-shadow)',
+                    border: '1px solid rgba(5, 150, 105, 0.25)',
+                    position: 'relative',
+                    overflow: 'hidden'
+                  }}
                 >
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: '4px',
+                      background: 'linear-gradient(90deg, #059669, #0284c7)'
+                    }}
+                  />
+
                   <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.85rem' }}>
                       <div>
-                        <span style={{ fontSize: '0.75rem', color: 'var(--primary-400)', fontWeight: 700, textTransform: 'uppercase' }}>
+                        <span
+                          style={{
+                            fontSize: '0.725rem',
+                            color: '#059669',
+                            background: '#d1fae5',
+                            fontWeight: 800,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.05em',
+                            padding: '2px 8px',
+                            borderRadius: '4px',
+                            border: '1px solid #a7f3d0'
+                          }}
+                        >
                           Diagnosis
                         </span>
-                        <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#ffffff' }}>
+                        <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: '4px' }}>
                           {rec.diagnosis}
                         </h3>
                       </div>
-                      <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>
                         {new Date(rec.visitDate || rec.createdAt).toLocaleDateString('en-GB')}
                       </span>
                     </div>
 
-                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '1rem' }}>
-                      {rec.clinicalNotes || 'Routine consultation completed with prescribed treatment plan.'}
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '0.85rem' }}>
+                      {rec.clinicalNotes || 'Routine medical consultation with prescribed treatment plan.'}
                     </p>
 
                     {/* Vitals preview pills */}
                     {rec.vitals && (
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '1rem' }}>
-                        <span style={{ fontSize: '0.75rem', padding: '3px 8px', background: 'rgba(14, 165, 233, 0.1)', color: '#38bdf8', borderRadius: '6px' }}>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '0.85rem' }}>
+                        <span style={{ fontSize: '0.75rem', padding: '3px 8px', background: '#e0f2fe', color: '#0284c7', borderRadius: '4px', fontWeight: 700, border: '1px solid #bae6fd' }}>
                           BP: {rec.vitals.bloodPressure || '120/80'}
                         </span>
-                        <span style={{ fontSize: '0.75rem', padding: '3px 8px', background: 'rgba(239, 68, 68, 0.1)', color: '#f87171', borderRadius: '6px' }}>
+                        <span style={{ fontSize: '0.75rem', padding: '3px 8px', background: '#ffe4e6', color: '#e11d48', borderRadius: '4px', fontWeight: 700, border: '1px solid #fecdd3' }}>
                           HR: {rec.vitals.heartRate || 72} bpm
                         </span>
-                        <span style={{ fontSize: '0.75rem', padding: '3px 8px', background: 'rgba(16, 185, 129, 0.1)', color: '#34d399', borderRadius: '6px' }}>
-                          Medications: {rec.prescriptions?.length || 0}
+                        <span style={{ fontSize: '0.75rem', padding: '3px 8px', background: '#d1fae5', color: '#059669', borderRadius: '4px', fontWeight: 700, border: '1px solid #a7f3d0' }}>
+                          Meds: {rec.prescriptions?.length || 0}
                         </span>
                       </div>
                     )}
                   </div>
 
-                  <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '0.85rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                       Dr. {rec.doctor?.name} ({rec.doctor?.specialization})
                     </span>
@@ -399,10 +522,21 @@ export default function PatientDashboard() {
                         setSelectedRecord(rec);
                         setShowRecordModal(true);
                       }}
-                      className="btn btn-primary"
-                      style={{ padding: '0.45rem 0.9rem', fontSize: '0.8rem' }}
+                      className="btn btn-sm"
+                      style={{
+                        background: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
+                        color: '#ffffff',
+                        border: 'none',
+                        fontWeight: 700,
+                        borderRadius: '6px',
+                        padding: '6px 12px',
+                        boxShadow: '0 2px 8px rgba(5, 150, 105, 0.25)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}
                     >
-                      <FileText size={14} /> View Rx / Print
+                      <FileText size={14} /> View / Print Rx
                     </button>
                   </div>
                 </div>
@@ -414,16 +548,39 @@ export default function PatientDashboard() {
 
       {/* TAB 3: Profile Settings */}
       {activeTab === 'profile' && (
-        <div className="glass-panel" style={{ padding: '2.5rem', maxWidth: '700px' }}>
-          <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#ffffff', marginBottom: '0.5rem' }}>
-            Patient Information & Emergency Contacts
+        <div
+          className="glass-panel"
+          style={{
+            padding: '2rem',
+            maxWidth: '640px',
+            borderRadius: '14px',
+            border: '1px solid rgba(225, 29, 72, 0.25)',
+            backgroundColor: 'var(--bg-surface)',
+            boxShadow: 'var(--card-shadow)',
+            position: 'relative',
+            overflow: 'hidden'
+          }}
+        >
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '4px',
+              background: 'linear-gradient(90deg, #e11d48, #d97706)'
+            }}
+          />
+
+          <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
+            Health Profile & Emergency Details
           </h3>
-          <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-            Keep your contact details up to date for clinic appointments and urgent notifications.
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
+            Update your phone, residential address, and emergency contact.
           </p>
 
           {profileMsg && (
-            <div style={{ padding: '0.75rem 1rem', background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', borderRadius: '8px', marginBottom: '1.5rem', fontSize: '0.85rem' }}>
+            <div style={{ padding: '0.65rem 0.85rem', background: 'var(--accent-emerald-bg)', color: 'var(--accent-emerald)', borderRadius: '6px', marginBottom: '1.25rem', fontSize: '0.85rem', border: '1px solid rgba(5, 150, 105, 0.25)' }}>
               {profileMsg}
             </div>
           )}
@@ -431,31 +588,39 @@ export default function PatientDashboard() {
           <form onSubmit={handleSaveProfile}>
             <div className="form-group">
               <label className="form-label">Phone Number</label>
-              <input
-                type="tel"
-                value={profileForm.phone}
-                onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
-                className="form-input"
-              />
+              <div style={{ position: 'relative' }}>
+                <Phone size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                <input
+                  type="tel"
+                  value={profileForm.phone}
+                  onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
+                  className="form-input"
+                  style={{ paddingLeft: '38px' }}
+                />
+              </div>
             </div>
 
             <div className="form-group">
-              <label className="form-label">Home Address</label>
-              <input
-                type="text"
-                value={profileForm.address}
-                onChange={(e) => setProfileForm({ ...profileForm, address: e.target.value })}
-                className="form-input"
-              />
+              <label className="form-label">Residential Address</label>
+              <div style={{ position: 'relative' }}>
+                <MapPin size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                <input
+                  type="text"
+                  value={profileForm.address}
+                  onChange={(e) => setProfileForm({ ...profileForm, address: e.target.value })}
+                  className="form-input"
+                  style={{ paddingLeft: '38px' }}
+                />
+              </div>
             </div>
 
-            <h4 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--primary-400)', marginTop: '1.5rem', marginBottom: '1rem' }}>
-              Emergency Contact Information
+            <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '1.5rem', marginBottom: '0.75rem' }}>
+              Emergency Contact
             </h4>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="grid-cols-2" style={{ gap: '0.75rem', marginBottom: '0.5rem' }}>
               <div className="form-group">
-                <label className="form-label">Emergency Contact Name</label>
+                <label className="form-label">Contact Name</label>
                 <input
                   type="text"
                   value={profileForm.emergencyContactName}
@@ -468,7 +633,7 @@ export default function PatientDashboard() {
                 <label className="form-label">Relationship</label>
                 <input
                   type="text"
-                  placeholder="e.g. Spouse / Parent / Sister"
+                  placeholder="e.g. Spouse, Parent, Sibling"
                   value={profileForm.emergencyContactRelation}
                   onChange={(e) => setProfileForm({ ...profileForm, emergencyContactRelation: e.target.value })}
                   className="form-input"
@@ -477,17 +642,21 @@ export default function PatientDashboard() {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Emergency Phone</label>
-              <input
-                type="tel"
-                value={profileForm.emergencyContactPhone}
-                onChange={(e) => setProfileForm({ ...profileForm, emergencyContactPhone: e.target.value })}
-                className="form-input"
-              />
+              <label className="form-label">Emergency Phone Number</label>
+              <div style={{ position: 'relative' }}>
+                <Phone size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                <input
+                  type="tel"
+                  value={profileForm.emergencyContactPhone}
+                  onChange={(e) => setProfileForm({ ...profileForm, emergencyContactPhone: e.target.value })}
+                  className="form-input"
+                  style={{ paddingLeft: '38px' }}
+                />
+              </div>
             </div>
 
-            <button type="submit" className="btn btn-primary" style={{ marginTop: '1rem' }}>
-              Save Profile Changes
+            <button type="submit" className="btn btn-primary" style={{ marginTop: '0.75rem' }}>
+              Save Profile
             </button>
           </form>
         </div>
@@ -495,47 +664,30 @@ export default function PatientDashboard() {
 
       {/* Reschedule Modal */}
       {rescheduleAppointment && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-            backdropFilter: 'blur(8px)',
-            zIndex: 10000,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '1rem'
-          }}
-        >
+        <div className="modal-backdrop" onClick={() => setRescheduleAppointment(null)}>
           <div
-            className="glass-panel animate-fade-in"
-            style={{
-              width: '100%',
-              maxWidth: '650px',
-              padding: '2rem',
-              backgroundColor: '#0f172a',
-              borderRadius: '16px'
-            }}
+            className="modal-card animate-fade-in"
+            style={{ maxWidth: '600px', padding: '2rem' }}
+            onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#ffffff' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)' }}>
                 Reschedule Appointment
               </h3>
               <button
                 onClick={() => setRescheduleAppointment(null)}
                 style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
               >
-                <X size={20} />
+                <X size={18} />
               </button>
             </div>
 
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-              Selecting a new time slot with Dr. {rescheduleAppointment.doctor?.name}.
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1.25rem' }}>
+              Select a new date and time slot with Dr. {rescheduleAppointment.doctor?.name}.
             </p>
 
-            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
-              <label className="form-label">Choose New Date</label>
+            <div className="form-group" style={{ marginBottom: '1.25rem' }}>
+              <label className="form-label">New Date</label>
               <input
                 type="date"
                 min={new Date().toISOString().split('T')[0]}
@@ -548,7 +700,7 @@ export default function PatientDashboard() {
               />
             </div>
 
-            <div style={{ marginBottom: '2rem' }}>
+            <div style={{ marginBottom: '1.5rem' }}>
               <SlotPicker
                 slots={rescheduleSlotsList}
                 selectedSlot={rescheduleSlot}
@@ -557,17 +709,17 @@ export default function PatientDashboard() {
               />
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
               <button
                 onClick={() => setRescheduleAppointment(null)}
-                className="btn btn-secondary"
+                className="btn btn-secondary btn-sm"
               >
                 Cancel
               </button>
               <button
                 disabled={!rescheduleSlot}
                 onClick={handleConfirmReschedule}
-                className="btn btn-primary"
+                className="btn btn-primary btn-sm"
               >
                 Confirm Reschedule
               </button>

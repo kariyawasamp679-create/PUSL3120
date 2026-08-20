@@ -11,19 +11,12 @@ import StatsCard from '../components/StatsCard';
 import {
   Calendar,
   Clock,
-  User,
   FileText,
   CheckCircle2,
-  AlertCircle,
   Plus,
   Trash2,
-  Stethoscope,
-  Activity,
-  Video,
-  X,
-  Printer
+  X
 } from '../components/Icons';
-
 
 export default function DoctorDashboard() {
   const { user } = useAuth();
@@ -150,135 +143,107 @@ export default function DoctorDashboard() {
   });
 
   return (
-    <div className="app-container" style={{ padding: '3rem 1.5rem', minHeight: '85vh' }}>
+    <div className="app-container" style={{ padding: '2.5rem 1rem', minHeight: '80vh' }}>
       {/* Doctor Header */}
       <div
         className="glass-panel"
         style={{
-          padding: '2rem 2.5rem',
-          marginBottom: '2.5rem',
+          padding: '1.5rem 1.75rem',
+          marginBottom: '2rem',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '1.5rem'
+          gap: '1rem',
+          borderRadius: '10px'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <img
             src={user?.avatar || 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=256'}
             alt="Doctor"
-            style={{ width: '68px', height: '68px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary-400)' }}
+            style={{ width: '56px', height: '56px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary-500)' }}
           />
           <div>
-            <span style={{ fontSize: '0.8rem', textTransform: 'uppercase', color: 'var(--primary-400)', fontWeight: 700 }}>
-              Practitioner Clinical Portal
+            <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--primary-500)', fontWeight: 700, letterSpacing: '0.04em' }}>
+              Doctor Portal
             </span>
-            <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#ffffff', marginTop: '2px' }}>
-              {user?.name || 'Dr. Practitioner'}
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: '2px' }}>
+              {user?.name || 'Doctor'}
             </h1>
-            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
-              {user?.specialization || 'Clinical Specialist'} • {user?.qualifications || 'MBBS'} • Fee: <strong style={{ color: '#38bdf8' }}>£{user?.consultationFee || 45}</strong>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+              {user?.specialization || 'Specialist'} • Fee: <strong style={{ color: 'var(--primary-500)' }}>Rs. {Number(user?.consultationFee || 1500).toLocaleString()}</strong>
             </div>
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ padding: '6px 14px', borderRadius: '999px', background: 'rgba(16, 185, 129, 0.15)', color: '#34d399', fontSize: '0.85rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#10b981' }} /> Active Practice Room
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ padding: '4px 10px', borderRadius: '6px', background: 'var(--accent-emerald-bg)', color: 'var(--accent-emerald)', fontSize: '0.8rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', border: '1px solid rgba(5, 150, 105, 0.25)' }}>
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'var(--accent-emerald)' }} /> On Duty
           </span>
         </div>
       </div>
 
       {/* KPI Metrics */}
-      <div className="grid-cols-4" style={{ marginBottom: '2.5rem' }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          gap: '1.25rem',
+          marginBottom: '2rem'
+        }}
+      >
         <StatsCard
-          title="Today's Patient Queue"
+          title="Today's Queue"
           value={stats?.todayAppointments ?? todayAppointments.length}
           icon={Clock}
-          subtitle="Scheduled for today"
-          color="#0ea5e9"
+          subtitle="Scheduled today"
+          color="var(--primary-500)"
         />
         <StatsCard
           title="Total Assigned"
           value={stats?.totalAssigned ?? appointments.length}
           icon={Calendar}
-          subtitle="All-time consultations"
-          color="#8b5cf6"
+          subtitle="All consultations"
+          color="var(--accent-purple)"
         />
         <StatsCard
           title="Completed Cases"
           value={stats?.completedCount ?? appointments.filter((a) => a.status === 'completed').length}
           icon={CheckCircle2}
-          subtitle="Successfully discharged"
-          color="#10b981"
+          subtitle="Finished visits"
+          color="var(--accent-emerald)"
         />
         <StatsCard
           title="Prescriptions Issued"
           value={stats?.totalPrescriptions ?? records.length}
           icon={FileText}
-          subtitle="Clinical medical records"
-          color="#f59e0b"
+          subtitle="Clinical reports"
+          color="var(--accent-amber)"
         />
       </div>
 
       {/* Tab Selectors */}
-      <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid var(--border-color)', marginBottom: '2rem' }}>
+      <div className="tab-container" style={{ marginBottom: '1.5rem' }}>
         <button
           onClick={() => setActiveTab('today')}
-          style={{
-            padding: '0.75rem 1.25rem',
-            background: 'none',
-            border: 'none',
-            borderBottom: activeTab === 'today' ? '2px solid var(--primary-400)' : '2px solid transparent',
-            color: activeTab === 'today' ? 'var(--primary-400)' : 'var(--text-secondary)',
-            fontWeight: 700,
-            fontSize: '0.95rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}
+          className={`tab-btn ${activeTab === 'today' ? 'active' : ''}`}
         >
-          <Clock size={18} /> Today's Agenda ({todayAppointments.length})
+          <Clock size={15} /> Today's Agenda ({todayAppointments.length})
         </button>
 
         <button
           onClick={() => setActiveTab('all')}
-          style={{
-            padding: '0.75rem 1.25rem',
-            background: 'none',
-            border: 'none',
-            borderBottom: activeTab === 'all' ? '2px solid var(--primary-400)' : '2px solid transparent',
-            color: activeTab === 'all' ? 'var(--primary-400)' : 'var(--text-secondary)',
-            fontWeight: 700,
-            fontSize: '0.95rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}
+          className={`tab-btn ${activeTab === 'all' ? 'active' : ''}`}
         >
-          <Calendar size={18} /> All Appointments ({appointments.length})
+          <Calendar size={15} /> All Appointments ({appointments.length})
         </button>
 
         <button
           onClick={() => setActiveTab('records')}
-          style={{
-            padding: '0.75rem 1.25rem',
-            background: 'none',
-            border: 'none',
-            borderBottom: activeTab === 'records' ? '2px solid var(--primary-400)' : '2px solid transparent',
-            color: activeTab === 'records' ? 'var(--primary-400)' : 'var(--text-secondary)',
-            fontWeight: 700,
-            fontSize: '0.95rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}
+          className={`tab-btn ${activeTab === 'records' ? 'active' : ''}`}
         >
-          <FileText size={18} /> Clinical Records ({records.length})
+          <FileText size={15} /> Medical Records ({records.length})
         </button>
       </div>
 
@@ -286,15 +251,21 @@ export default function DoctorDashboard() {
       {activeTab === 'today' && (
         <div>
           {todayAppointments.length === 0 ? (
-            <div className="glass-panel" style={{ padding: '3rem', textAlign: 'center' }}>
-              <CheckCircle2 size={48} style={{ margin: '0 auto 1rem auto', color: '#10b981' }} />
-              <h3 style={{ fontSize: '1.25rem', color: '#ffffff', marginBottom: '0.5rem' }}>No More Patients for Today</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+            <div className="glass-panel" style={{ padding: '3rem', textAlign: 'center', borderRadius: '10px' }}>
+              <CheckCircle2 size={40} style={{ margin: '0 auto 0.75rem auto', color: 'var(--accent-emerald)' }} />
+              <h3 style={{ fontSize: '1.15rem', color: 'var(--text-primary)', marginBottom: '0.35rem' }}>No Appointments for Today</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
                 All consultations for today have been completed or none are scheduled.
               </p>
             </div>
           ) : (
-            <div className="grid-cols-2">
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+                gap: '1.25rem'
+              }}
+            >
               {todayAppointments.map((app) => (
                 <AppointmentCard
                   key={app._id}
@@ -315,7 +286,13 @@ export default function DoctorDashboard() {
 
       {/* TAB 2: All Assigned Appointments */}
       {activeTab === 'all' && (
-        <div className="grid-cols-2">
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+            gap: '1.25rem'
+          }}
+        >
           {appointments.map((app) => (
             <AppointmentCard
               key={app._id}
@@ -334,44 +311,49 @@ export default function DoctorDashboard() {
 
       {/* TAB 3: Issued Medical Records */}
       {activeTab === 'records' && (
-        <div className="grid-cols-2">
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+            gap: '1.25rem'
+          }}
+        >
           {records.map((rec) => (
             <div
               key={rec._id}
               className="glass-panel glass-panel-hover"
-              style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
+              style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', borderRadius: '10px' }}
             >
               <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--primary-400)', fontWeight: 700, textTransform: 'uppercase' }}>
-                    Patient Case Report
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--primary-500)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Diagnosis
                   </span>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                     {new Date(rec.visitDate || rec.createdAt).toLocaleDateString('en-GB')}
                   </span>
                 </div>
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#ffffff', marginBottom: '0.5rem' }}>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.35rem' }}>
                   {rec.diagnosis}
                 </h3>
-                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.75rem' }}>
-                  Patient: <strong style={{ color: '#ffffff' }}>{rec.patient?.name}</strong> (Blood: {rec.patient?.bloodGroup || 'N/A'})
+                <div style={{ fontSize: '0.825rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+                  Patient: <strong style={{ color: 'var(--text-primary)' }}>{rec.patient?.name}</strong> (Blood: {rec.patient?.bloodGroup || 'N/A'})
                 </div>
-                <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
+                <p style={{ fontSize: '0.825rem', color: 'var(--text-muted)', lineHeight: 1.45 }}>
                   {rec.clinicalNotes || 'Treatment plan formulated and dispensed.'}
                 </p>
               </div>
 
-              <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '1rem', marginTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.8rem', color: '#10b981', fontWeight: 600 }}>
-                  {rec.prescriptions?.length || 0} Rx Items
+              <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '0.85rem', marginTop: '0.85rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.8rem', color: 'var(--accent-emerald)', fontWeight: 600 }}>
+                  {rec.prescriptions?.length || 0} Medications
                 </span>
                 <button
                   onClick={() => {
                     setViewRecord(rec);
                     setShowViewRecordModal(true);
                   }}
-                  className="btn btn-secondary"
-                  style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
+                  className="btn btn-secondary btn-sm"
                 >
                   <FileText size={14} /> View Rx Sheet
                 </button>
@@ -383,57 +365,40 @@ export default function DoctorDashboard() {
 
       {/* CREATE MEDICAL RECORD & PRESCRIPTION MODAL */}
       {creatingRecordForApp && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.85)',
-            backdropFilter: 'blur(10px)',
-            zIndex: 10000,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '1rem'
-          }}
-        >
+        <div className="modal-backdrop" onClick={() => setCreatingRecordForApp(null)}>
           <div
-            className="glass-panel animate-fade-in"
+            className="modal-card animate-fade-in"
             style={{
-              width: '100%',
-              maxWidth: '820px',
-              maxHeight: '92vh',
-              overflowY: 'auto',
-              padding: '2.5rem',
-              backgroundColor: '#0f172a',
-              borderRadius: '18px',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)'
+              maxWidth: '800px',
+              padding: '2rem'
             }}
+            onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.85rem' }}>
               <div>
-                <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#ffffff' }}>
-                  Issue Clinical Report & Prescription (Rx)
+                <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                  Clinical Report & Prescription (Rx)
                 </h3>
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                  Patient: <strong style={{ color: '#ffffff' }}>{creatingRecordForApp.patient?.name}</strong> • Slot: {creatingRecordForApp.timeSlot}
+                <p style={{ fontSize: '0.825rem', color: 'var(--text-secondary)' }}>
+                  Patient: <strong style={{ color: 'var(--text-primary)' }}>{creatingRecordForApp.patient?.name}</strong> • Time: {creatingRecordForApp.timeSlot}
                 </p>
               </div>
               <button
                 onClick={() => setCreatingRecordForApp(null)}
                 style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}
               >
-                <X size={22} />
+                <X size={20} />
               </button>
             </div>
 
             <form onSubmit={handleSubmitRecord}>
               {/* Primary Diagnosis */}
               <div className="form-group">
-                <label className="form-label">Primary Clinical Diagnosis *</label>
+                <label className="form-label">Primary Diagnosis *</label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Acute Bronchitis / Hypertension Stage 1 / Dental Caries"
+                  placeholder="e.g. Acute Bronchitis, Hypertension, Dental Caries..."
                   value={diagnosis}
                   onChange={(e) => setDiagnosis(e.target.value)}
                   className="form-input"
@@ -441,13 +406,13 @@ export default function DoctorDashboard() {
               </div>
 
               {/* Vitals Signs Grid */}
-              <div style={{ marginBottom: '1.5rem' }}>
-                <label className="form-label" style={{ marginBottom: '0.5rem', display: 'block' }}>
-                  Clinical Vitals Measured
+              <div style={{ marginBottom: '1.25rem' }}>
+                <label className="form-label" style={{ marginBottom: '0.4rem', display: 'block' }}>
+                  Patient Vitals
                 </label>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
                   <div>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Blood Pressure</span>
+                    <span style={{ fontSize: '0.725rem', color: 'var(--text-muted)' }}>Blood Pressure</span>
                     <input
                       type="text"
                       value={vitals.bloodPressure}
@@ -456,7 +421,7 @@ export default function DoctorDashboard() {
                     />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Heart Rate (bpm)</span>
+                    <span style={{ fontSize: '0.725rem', color: 'var(--text-muted)' }}>Heart Rate (bpm)</span>
                     <input
                       type="number"
                       value={vitals.heartRate}
@@ -465,7 +430,7 @@ export default function DoctorDashboard() {
                     />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Temp (°C)</span>
+                    <span style={{ fontSize: '0.725rem', color: 'var(--text-muted)' }}>Temp (°C)</span>
                     <input
                       type="number"
                       step="0.1"
@@ -475,7 +440,7 @@ export default function DoctorDashboard() {
                     />
                   </div>
                   <div>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Weight (kg)</span>
+                    <span style={{ fontSize: '0.725rem', color: 'var(--text-muted)' }}>Weight (kg)</span>
                     <input
                       type="number"
                       value={vitals.weight}
@@ -488,7 +453,7 @@ export default function DoctorDashboard() {
 
               {/* Clinical Notes */}
               <div className="form-group">
-                <label className="form-label">Clinical Observations & Advice</label>
+                <label className="form-label">Clinical Observations & Treatment Notes</label>
                 <textarea
                   rows={3}
                   placeholder="Notes on examination findings, patient history, and dietary/exercise guidance..."
@@ -499,26 +464,25 @@ export default function DoctorDashboard() {
               </div>
 
               {/* Dynamic Prescriptions List */}
-              <div style={{ marginBottom: '1.5rem', background: 'rgba(30, 41, 59, 0.4)', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                  <label className="form-label" style={{ margin: 0, color: 'var(--primary-400)' }}>
-                    Prescribed Medications (Rx)
+              <div style={{ marginBottom: '1.25rem', background: 'var(--bg-primary)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                  <label className="form-label" style={{ margin: 0, color: 'var(--primary-600)' }}>
+                    Prescription Medications (Rx)
                   </label>
                   <button
                     type="button"
                     onClick={addMedicationRow}
-                    className="btn btn-secondary"
-                    style={{ padding: '0.35rem 0.75rem', fontSize: '0.75rem' }}
+                    className="btn btn-secondary btn-sm"
                   >
-                    <Plus size={14} /> Add Medication
+                    <Plus size={13} /> Add Drug
                   </button>
                 </div>
 
                 {prescriptions.map((p, idx) => (
-                  <div key={idx} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1.5fr 1fr 1fr 36px', gap: '8px', marginBottom: '10px', alignItems: 'center' }}>
+                  <div key={idx} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1.5fr 1fr 1fr 32px', gap: '6px', marginBottom: '8px', alignItems: 'center' }}>
                     <input
                       type="text"
-                      placeholder="Medication Name (e.g. Amoxicillin)"
+                      placeholder="Medication Name"
                       value={p.medication}
                       onChange={(e) => handleMedChange(idx, 'medication', e.target.value)}
                       className="form-input"
@@ -532,14 +496,14 @@ export default function DoctorDashboard() {
                     />
                     <input
                       type="text"
-                      placeholder="Frequency (Twice daily)"
+                      placeholder="Frequency"
                       value={p.frequency}
                       onChange={(e) => handleMedChange(idx, 'frequency', e.target.value)}
                       className="form-input"
                     />
                     <input
                       type="text"
-                      placeholder="Duration (7 days)"
+                      placeholder="Duration"
                       value={p.duration}
                       onChange={(e) => handleMedChange(idx, 'duration', e.target.value)}
                       className="form-input"
@@ -555,9 +519,9 @@ export default function DoctorDashboard() {
                       <button
                         type="button"
                         onClick={() => removeMedicationRow(idx)}
-                        style={{ background: 'none', border: 'none', color: '#f43f5e', cursor: 'pointer', padding: '4px' }}
+                        style={{ background: 'none', border: 'none', color: 'var(--accent-rose)', cursor: 'pointer', padding: '2px' }}
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={15} />
                       </button>
                     )}
                   </div>
@@ -565,19 +529,19 @@ export default function DoctorDashboard() {
               </div>
 
               {/* Lab Tests & Follow-Up */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="grid-cols-2" style={{ gap: '0.75rem' }}>
                 <div className="form-group">
-                  <label className="form-label">Recommended Diagnostic Lab Tests</label>
+                  <label className="form-label">Recommended Lab Tests</label>
                   <input
                     type="text"
-                    placeholder="e.g. Lipid Profile, Full Blood Count, ECG"
+                    placeholder="e.g. Full Blood Count, ECG, Lipid Panel"
                     value={labTests}
                     onChange={(e) => setLabTests(e.target.value)}
                     className="form-input"
                   />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Scheduled Follow-Up Review Date</label>
+                  <label className="form-label">Follow-Up Date</label>
                   <input
                     type="date"
                     value={followUpDate}
@@ -587,21 +551,20 @@ export default function DoctorDashboard() {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', borderTop: '1px solid var(--border-color)', paddingTop: '1.5rem', marginTop: '1.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', borderTop: '1px solid var(--border-color)', paddingTop: '1.25rem', marginTop: '1.25rem' }}>
                 <button
                   type="button"
                   onClick={() => setCreatingRecordForApp(null)}
-                  className="btn btn-secondary"
+                  className="btn btn-secondary btn-sm"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submittingRecord}
-                  className="btn btn-primary"
-                  style={{ padding: '0.75rem 1.75rem' }}
+                  className="btn btn-primary btn-sm"
                 >
-                  {submittingRecord ? 'Publishing & Syncing...' : 'Complete Visit & Publish Rx'}
+                  {submittingRecord ? 'Saving...' : 'Save & Complete Consultation'}
                 </button>
               </div>
             </form>
