@@ -29,6 +29,14 @@ export const userService = {
     return await api.post('/users/doctors', doctorData);
   },
 
+  async createPatient(patientData) {
+    try {
+      return await api.post('/users/patients', patientData);
+    } catch (err) {
+      return await api.post('/auth/register', { ...patientData, role: 'patient' });
+    }
+  },
+
   async updateUser(id, userData) {
     return await api.put(`/users/${id}`, userData);
   },

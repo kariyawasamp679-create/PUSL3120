@@ -10,161 +10,76 @@ export async function ensureDefaultData() {
 
   try {
     const deptCount = await Department.countDocuments();
-    let depts = {};
 
     if (deptCount === 0) {
       console.log('[AutoSeed] Populating default departments...');
-      const createdDepts = await Department.insertMany([
+      await Department.insertMany([
         {
-          name: 'Cardiology & Cardiovascular Care',
+          name: 'Cardiology',
           code: 'CARD',
           description: 'Specialist heart health diagnostics, ECG, echocardiograms, and hypertension management.',
           icon: 'HeartPulse',
           color: '#ef4444',
           location: 'Wing B, Floor 2',
-          phone: '+44 (0) 20 7946 0120'
+          phone: '+44 20 7946 0120'
         },
         {
-          name: 'Dental Surgery & Oral Health',
+          name: 'Dental Surgery',
           code: 'DENT',
-          description: 'Comprehensive dental hygiene, extractions, root canal treatments, and cosmetic oral surgery.',
+          description: 'Comprehensive dental hygiene, extractions, root canal treatments, and oral surgery.',
           icon: 'Sparkles',
-          color: '#0ea5e9',
+          color: '#0284c7',
           location: 'Wing A, Ground Floor',
-          phone: '+44 (0) 20 7946 0121'
+          phone: '+44 20 7946 0121'
         },
         {
-          name: 'General Practice & Family Medicine',
+          name: 'General Practice',
           code: 'GP',
-          description: 'Routine health evaluations, prescription renewals, vaccinations, and initial diagnostic triage.',
+          description: 'Routine health evaluations, prescription renewals, vaccinations, and primary diagnostic triage.',
           icon: 'Stethoscope',
-          color: '#10b981',
+          color: '#059669',
           location: 'Main Clinic, Floor 1',
-          phone: '+44 (0) 20 7946 0122'
+          phone: '+44 20 7946 0122'
         },
         {
-          name: 'Pediatrics & Child Wellness',
+          name: 'Pediatrics',
           code: 'PED',
           description: 'Dedicated neonatal, infant, and adolescent medical care with specialized child diagnostics.',
           icon: 'Baby',
-          color: '#f59e0b',
+          color: '#d97706',
           location: 'Wing C, Floor 3',
-          phone: '+44 (0) 20 7946 0123'
+          phone: '+44 20 7946 0123'
         },
         {
-          name: 'Orthopedics & Sports Medicine',
+          name: 'Orthopedics',
           code: 'ORTH',
           description: 'Joint reconstruction, musculoskeletal rehabilitation, fracture care, and physiotherapy triage.',
           icon: 'Activity',
-          color: '#8b5cf6',
+          color: '#7c3aed',
           location: 'Wing B, Ground Floor',
-          phone: '+44 (0) 20 7946 0124'
+          phone: '+44 20 7946 0124'
         }
       ]);
-
-      createdDepts.forEach((d) => {
-        depts[d.code] = d._id;
-      });
-    } else {
-      const existing = await Department.find({});
-      existing.forEach((d) => {
-        depts[d.code] = d._id;
-      });
     }
 
-    const defaultPassword = hashPassword('Password123!');
+    // Ensure ONLY the System Administrator account exists
+    const adminEmail = 'admin@medipulse.com';
+    const adminExists = await User.findOne({ email: adminEmail });
 
-    // Demo Users list
-    const demoUsers = [
-      {
-        email: 'admin@medipulse.com',
-        name: 'Eleanor Vance (Hospital Director)',
+    if (!adminExists) {
+      const defaultPassword = hashPassword('Password123!');
+      await User.create({
+        email: adminEmail,
+        name: 'System Administrator',
         role: 'admin',
-        phone: '+44 (0) 20 7946 0001',
-        password: defaultPassword
-      },
-      {
-        email: 'dr.sarah@medipulse.com',
-        name: 'Dr. Sarah Jenkins, MD, FRCP',
-        role: 'doctor',
-        specialization: 'Senior Consultant Cardiologist',
-        department: depts['CARD'],
-        consultationFee: 120,
-        phone: '+44 (0) 20 7946 0002',
+        phone: '+44 20 7946 0001',
         password: defaultPassword,
-        qualifications: 'MBBS, MD (Cardiology), FRCP (London)',
-        bio: 'Over 14 years of clinical experience in interventional cardiology and structural heart disease.',
-        workingHours: {
-          start: '09:00',
-          end: '17:00',
-          days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
-        }
-      },
-      {
-        email: 'dr.marcus@medipulse.com',
-        name: 'Dr. Marcus Vance, BDS, MFDS',
-        role: 'doctor',
-        specialization: 'Lead Dental Surgeon & Implantologist',
-        department: depts['DENT'],
-        consultationFee: 95,
-        phone: '+44 (0) 20 7946 0003',
-        password: defaultPassword,
-        qualifications: 'BDS (Hons), MFDS RCPS (Glasg)',
-        bio: 'Specialist in restorative dentistry, prosthodontics, and minimally invasive oral surgery.',
-        workingHours: {
-          start: '08:30',
-          end: '16:30',
-          days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
-        }
-      },
-      {
-        email: 'dr.emily@medipulse.com',
-        name: 'Dr. Emily Watson, MBBS, MRCGP',
-        role: 'doctor',
-        specialization: 'Principal General Practitioner (GP)',
-        department: depts['GP'],
-        consultationFee: 80,
-        phone: '+44 (0) 20 7946 0004',
-        password: defaultPassword,
-        qualifications: 'MBBS, MRCGP, DCH, DRCOG',
-        bio: 'Dedicated family physician with special interests in preventative medicine and chronic disease care.',
-        workingHours: {
-          start: '09:00',
-          end: '17:00',
-          days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
-        }
-      },
-      {
-        email: 'jane.doe@example.com',
-        name: 'Jane Doe',
-        role: 'patient',
-        phone: '+44 (0) 7700 900077',
-        password: defaultPassword,
-        bloodGroup: 'A+',
-        dateOfBirth: new Date('1992-06-15'),
-        address: '42 Blossom Street, London, E1 6PL'
-      },
-      {
-        email: 'john.smith@example.com',
-        name: 'John Smith',
-        role: 'patient',
-        phone: '+44 (0) 7700 900088',
-        password: defaultPassword,
-        bloodGroup: 'O+',
-        dateOfBirth: new Date('1985-11-23'),
-        address: '18 Cambridge Road, London, SW3 4TU'
-      }
-    ];
-
-    for (const u of demoUsers) {
-      const exists = await User.findOne({ email: u.email });
-      if (!exists) {
-        await User.create(u);
-        console.log(`[AutoSeed] Created demo user: ${u.email} (${u.role})`);
-      }
+        avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256'
+      });
+      console.log('[AutoSeed] Created System Administrator: admin@medipulse.com');
     }
   } catch (err) {
-    console.warn('[AutoSeed] Non-critical autoseed notice:', err.message);
+    console.warn('[AutoSeed] Non-critical notice:', err.message);
   } finally {
     isSeeding = false;
   }

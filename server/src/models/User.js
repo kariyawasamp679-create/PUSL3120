@@ -47,7 +47,7 @@ const userSchema = new mongoose.Schema(
     },
     consultationFee: {
       type: Number,
-      default: 45
+      default: 1500
     },
     bio: {
       type: String,

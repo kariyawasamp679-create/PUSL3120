@@ -4,6 +4,7 @@ import {
   getDoctors,
   getDoctorById,
   createDoctor,
+  createPatient,
   updateUser,
   deleteUser
 } from '../controllers/userController.js';
@@ -18,6 +19,7 @@ router.get('/doctors/:id', getDoctorById);
 // Admin-only user management routes
 router.get('/', protect, authorize('admin'), getUsers);
 router.post('/doctors', protect, authorize('admin'), createDoctor);
+router.post('/patients', protect, authorize('admin'), createPatient);
 router.put('/:id', protect, authorize('admin'), updateUser);
 router.delete('/:id', protect, authorize('admin'), deleteUser);
 

@@ -58,7 +58,7 @@ const appointmentSchema = new mongoose.Schema(
     },
     fee: {
       type: Number,
-      default: 45
+      default: 1500
     },
     paymentStatus: {
       type: String,

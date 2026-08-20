@@ -64,20 +64,10 @@ export async function getDoctors(req, res, next) {
       ];
     }
 
-    let doctors = await User.find(query)
+    const doctors = await User.find(query)
       .select('-password')
       .populate('department', 'name code icon color location')
       .sort({ name: 1 });
-
-    if (doctors.length === 0) {
-      const { ensureDefaultData } = await import('../utils/autoSeed.js');
-      await ensureDefaultData();
-      doctors = await User.find(query)
-        .select('-password')
-        .populate('department', 'name code icon color location')
-        .sort({ name: 1 });
-    }
-
 
     res.json({
       success: true,
@@ -151,7 +141,7 @@ export async function createDoctor(req, res, next) {
       specialization,
       qualifications: qualifications || 'MBBS',
       department,
-      consultationFee: consultationFee ? Number(consultationFee) : 50,
+      consultationFee: consultationFee ? Number(consultationFee) : 1500,
       bio: bio || '',
       workingDays: workingDays || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
       workingHours: workingHours || { start: '09:00', end: '17:00' }
@@ -165,6 +155,60 @@ export async function createDoctor(req, res, next) {
       success: true,
       message: 'Doctor created successfully',
       doctor: populatedDoctor
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * @desc    Create patient account (Admin registration)
+ * @route   POST /api/users/patients
+ * @access  Private (Admin)
+ */
+export async function createPatient(req, res, next) {
+  try {
+    const { name, email, password, phone, bloodGroup, address, emergencyContact } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide patient name, email, and password'
+      });
+    }
+
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: 'A user with this email address already exists'
+      });
+    }
+
+    const hashedPassword = hashPassword(password);
+
+    const patient = await User.create({
+      name,
+      email: email.toLowerCase(),
+      password: hashedPassword,
+      role: 'patient',
+      phone: phone || '',
+      bloodGroup: bloodGroup || 'O+',
+      address: address || '',
+      emergencyContact: emergencyContact || { name: '', phone: '', relation: '' }
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Patient account created successfully',
+      patient: {
+        _id: patient._id,
+        name: patient.name,
+        email: patient.email,
+        role: patient.role,
+        phone: patient.phone,
+        bloodGroup: patient.bloodGroup
+      }
     });
   } catch (error) {
     next(error);
