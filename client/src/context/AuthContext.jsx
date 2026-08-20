@@ -69,18 +69,9 @@ export function AuthProvider({ children }) {
     return res;
   };
 
-  // Demo 1-Click Quick Login
-  const loginDemoAccount = async (roleType) => {
-    const accounts = {
-      admin: { email: 'admin@medipulse.com', password: 'Password123!' },
-      doctor: { email: 'dr.sarah@medipulse.com', password: 'Password123!' },
-      dentist: { email: 'dr.marcus@medipulse.com', password: 'Password123!' },
-      gp: { email: 'dr.emily@medipulse.com', password: 'Password123!' },
-      patient: { email: 'jane.doe@example.com', password: 'Password123!' }
-    };
-
-    const target = accounts[roleType] || accounts.patient;
-    return await login(target.email, target.password);
+  // Admin 1-Click Quick Login
+  const loginDemoAccount = async () => {
+    return await login('admin@medipulse.com', 'Password123!');
   };
 
   const value = {

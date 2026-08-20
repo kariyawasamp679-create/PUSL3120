@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from '../components/Router';
 import { useAuth } from '../context/AuthContext';
-
-import { Activity, Lock, Mail, Eye, EyeOff, AlertCircle, Sparkles, ShieldCheck, HeartPulse, Stethoscope, User } from '../components/Icons';
-
+import { Activity, Lock, Mail, Eye, EyeOff, AlertCircle, ShieldCheck, Key, ArrowRight } from '../components/Icons';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -12,7 +10,7 @@ export default function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { login, loginDemoAccount } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -25,7 +23,6 @@ export default function Login() {
 
     try {
       const res = await login(email, password);
-      // Route based on role
       if (res.user?.role === 'doctor') {
         navigate('/doctor/dashboard');
       } else if (res.user?.role === 'admin') {
@@ -36,86 +33,71 @@ export default function Login() {
         navigate('/patient/dashboard');
       }
     } catch (err) {
-      setError(err.message || 'Invalid email or password');
+      setError(err.message || 'Invalid email or password. Please verify your credentials.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleQuickDemo = async (roleKey) => {
-    setError('');
-    setLoading(true);
-    try {
-      const res = await loginDemoAccount(roleKey);
-      if (res.user?.role === 'doctor') {
-        navigate('/doctor/dashboard');
-      } else if (res.user?.role === 'admin') {
-        navigate('/admin/dashboard');
-      } else {
-        navigate('/patient/dashboard');
-      }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
+  const handleFillAdmin = () => {
+    setEmail('admin@medipulse.com');
+    setPassword('Password123!');
   };
 
   return (
-    <div className="app-container" style={{ padding: '3.5rem 1.5rem', minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div className="app-container" style={{ padding: '3rem 1rem', minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div
-        className="glass-panel animate-fade-in"
+        className="glass-panel animate-slide-up"
         style={{
-          maxWidth: '480px',
+          maxWidth: '460px',
           width: '100%',
-          padding: '2.5rem',
-          backgroundColor: 'rgba(15, 23, 42, 0.95)',
-          border: '1px solid rgba(14, 165, 233, 0.3)',
-          borderRadius: '18px',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)'
+          padding: '2.25rem',
+          backgroundColor: 'var(--bg-surface)',
+          borderRadius: '12px',
+          boxShadow: 'var(--card-shadow-hover)'
         }}
       >
         {/* Brand Header */}
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
           <div
             style={{
-              width: '50px',
-              height: '50px',
-              borderRadius: '14px',
-              background: 'var(--primary-gradient)',
+              width: '46px',
+              height: '46px',
+              borderRadius: '10px',
+              background: 'var(--primary-50)',
+              color: 'var(--primary-500)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              margin: '0 auto 1rem auto',
-              boxShadow: '0 6px 20px rgba(14, 165, 233, 0.4)'
+              margin: '0 auto 1rem auto'
             }}
           >
-            <Activity size={28} color="#ffffff" />
+            <Activity size={26} />
           </div>
-          <h2 style={{ fontSize: '1.65rem', fontWeight: 800, color: '#ffffff' }}>
-            MediPulse 360 Sign In
+          <h2 style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+            Sign In to MediPulse 360
           </h2>
-          <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-            Access Patient, Doctor, or Administrative Portal
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
+            Access Patient, Doctor, or Administrator Portal
           </p>
         </div>
 
         {error && (
           <div
             style={{
-              padding: '0.85rem 1rem',
-              backgroundColor: 'rgba(244, 63, 94, 0.12)',
-              border: '1px solid rgba(244, 63, 94, 0.3)',
+              padding: '0.75rem 1rem',
+              backgroundColor: 'var(--accent-rose-bg)',
+              border: '1px solid rgba(225, 29, 72, 0.25)',
               borderRadius: '8px',
-              color: '#fda4af',
-              fontSize: '0.875rem',
+              color: 'var(--accent-rose)',
+              fontSize: '0.85rem',
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              marginBottom: '1.5rem'
+              marginBottom: '1.25rem'
             }}
           >
-            <AlertCircle size={18} />
+            <AlertCircle size={16} />
             <span>{error}</span>
           </div>
         )}
@@ -124,15 +106,15 @@ export default function Login() {
           <div className="form-group">
             <label className="form-label">Email Address</label>
             <div style={{ position: 'relative' }}>
-              <Mail size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+              <Mail size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
               <input
                 type="email"
                 required
-                placeholder="name@medipulse.com"
+                placeholder="admin@medipulse.com or user@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="form-input"
-                style={{ paddingLeft: '40px' }}
+                style={{ paddingLeft: '38px' }}
               />
             </div>
           </div>
@@ -140,7 +122,7 @@ export default function Login() {
           <div className="form-group">
             <label className="form-label">Password</label>
             <div style={{ position: 'relative' }}>
-              <Lock size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+              <Lock size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
               <input
                 type={showPassword ? 'text' : 'password'}
                 required
@@ -148,7 +130,7 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="form-input"
-                style={{ paddingLeft: '40px', paddingRight: '40px' }}
+                style={{ paddingLeft: '38px', paddingRight: '38px' }}
               />
               <button
                 type="button"
@@ -161,10 +143,13 @@ export default function Login() {
                   background: 'none',
                   border: 'none',
                   color: 'var(--text-muted)',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center'
                 }}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
           </div>
@@ -173,58 +158,46 @@ export default function Login() {
             type="submit"
             disabled={loading}
             className="btn btn-primary"
-            style={{ width: '100%', padding: '0.85rem', fontSize: '1rem', marginTop: '0.5rem' }}
+            style={{ width: '100%', padding: '0.75rem', fontSize: '0.95rem', marginTop: '0.5rem' }}
           >
             {loading ? 'Authenticating...' : 'Sign In'}
           </button>
         </form>
 
-        {/* 1-Click Demo Shortcut Section */}
-        <div style={{ marginTop: '2rem', borderTop: '1px solid var(--border-color)', paddingTop: '1.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
-            <Sparkles size={14} color="#c084fc" /> 1-Click Test Role Logins (For Evaluators)
+        {/* System Admin Credentials Helper Card */}
+        <div
+          style={{
+            marginTop: '1.5rem',
+            padding: '1rem',
+            background: 'var(--primary-50)',
+            borderRadius: '8px',
+            border: '1px solid rgba(2, 132, 199, 0.2)'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--primary-600)', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <ShieldCheck size={14} /> System Administrator Account
+            </span>
+            <button
+              type="button"
+              onClick={handleFillAdmin}
+              className="btn btn-sm btn-secondary"
+              style={{ padding: '2px 8px', fontSize: '0.75rem', height: 'auto' }}
+            >
+              Fill Credentials
+            </button>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-            <button
-              type="button"
-              onClick={() => handleQuickDemo('admin')}
-              className="btn btn-secondary"
-              style={{ padding: '0.5rem', fontSize: '0.75rem', justifyContent: 'flex-start', gap: '6px', color: '#c084fc' }}
-            >
-              <ShieldCheck size={14} /> Admin Portal
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickDemo('doctor')}
-              className="btn btn-secondary"
-              style={{ padding: '0.5rem', fontSize: '0.75rem', justifyContent: 'flex-start', gap: '6px', color: '#ef4444' }}
-            >
-              <HeartPulse size={14} /> Cardiologist
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickDemo('dentist')}
-              className="btn btn-secondary"
-              style={{ padding: '0.5rem', fontSize: '0.75rem', justifyContent: 'flex-start', gap: '6px', color: '#38bdf8' }}
-            >
-              <Sparkles size={14} /> Dental Surgeon
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickDemo('patient')}
-              className="btn btn-secondary"
-              style={{ padding: '0.5rem', fontSize: '0.75rem', justifyContent: 'flex-start', gap: '6px', color: '#34d399' }}
-            >
-              <User size={14} /> Patient (Jane)
-            </button>
+          <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+            Email: <strong style={{ color: 'var(--text-primary)' }}>admin@medipulse.com</strong> • Password: <strong style={{ color: 'var(--text-primary)' }}>Password123!</strong>
           </div>
         </div>
 
-        <div style={{ textAlign: 'center', marginTop: '1.75rem', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-          Don't have a patient account?{' '}
-          <Link to="/register" style={{ color: 'var(--primary-400)', fontWeight: 700 }}>
-            Create Patient Account
+        {/* Registration Links */}
+        <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+          Don't have an account?{' '}
+          <Link to="/register" style={{ color: 'var(--primary-500)', fontWeight: 600 }}>
+            Register as Patient <ArrowRight size={13} style={{ verticalAlign: 'middle' }} />
           </Link>
         </div>
       </div>
