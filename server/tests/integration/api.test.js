@@ -1,5 +1,31 @@
 import request from 'supertest';
+import mongoose from 'mongoose';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 import app from '../../src/app.js';
+
+let mongoServer;
+
+beforeAll(async () => {
+  try {
+    mongoServer = await MongoMemoryServer.create();
+    const uri = mongoServer.getUri();
+    await mongoose.connect(uri);
+  } catch (err) {
+    const fallbackUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/pusl3120';
+    await mongoose.connect(fallbackUri);
+  }
+}, 60000);
+
+afterAll(async () => {
+  try {
+    await mongoose.connection.close();
+    if (mongoServer) {
+      await mongoServer.stop();
+    }
+  } catch (err) {
+    // Ignore teardown errors
+  }
+});
 
 describe('MediPulse 360 API Integration Tests', () => {
   describe('GET /api/health', () => {

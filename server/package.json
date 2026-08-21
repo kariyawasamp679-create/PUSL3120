@@ -8,8 +8,7 @@
     "start": "node src/server.js",
     "build": "echo Server is ready for production",
     "seed": "node src/seed.js",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles --forceExit"
-
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --forceExit"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

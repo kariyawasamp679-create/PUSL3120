@@ -32,13 +32,11 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
-      - name: Install Server Dependencies
+      - name: Install Dependencies
         run: npm ci
-        working-directory: ./server
 
       - name: Run Backend Unit & Integration Tests
-        run: npm test
-        working-directory: ./server
+        run: npm test --workspace server
         env:
           NODE_ENV: test
           MONGODB_URI: mongodb://localhost:27017/pusl3120_test
@@ -59,13 +57,11 @@ jobs:
           node-version: 20.x
           cache: 'npm'
 
-      - name: Install Client Dependencies
+      - name: Install Dependencies
         run: npm ci
-        working-directory: ./client
 
       - name: Build Production Client Assets
-        run: npm run build
-        working-directory: ./client
+        run: npm run build --workspace client
 
   # Job 3: Docker Multi-Container Build Verification
   docker-build-verification:
